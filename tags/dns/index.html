@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Tag: DNS | Timon Wong&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Timon Wong's Blog">
+<meta property="og:url" content="http://theo.im/tags/dns/index.html">
+<meta property="og:site_name" content="Timon Wong's Blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Timon Wong's Blog">
+<meta name="twitter:description">
+<meta name="twitter:creator" content="@timonwong">
+  
+    <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Timon Wong&#39;s Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">(╯°□°）╯ ┻━┻</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        
+<form class="search-form">
+  <input type="search" id="st-search-input" class="search-form-input" placeholder="Search">
+  <input type="submit" value="&#xF002;" class="search-form-submit">
+</form>
+
+
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-resolve-302-redirection-on-github-pages" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2014/05/14/resolve-302-redirection-on-github-pages/" class="article-date">
+  <time datetime="2014-05-14T02:34:21.000Z" itemprop="datePublished">May 14 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/it/">IT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2014/05/14/resolve-302-redirection-on-github-pages/">解决GitHub Pages的302转向问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p><strong>NOTE:</strong> 如果给GitHub Pages使用的是子域名，按照<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages" target="_blank" rel="external">GitHub Pages文档</a>配置，不会出现该问题。</p>
+<p>由于我在GitHub Pages上的搭的博客使用了<code>theo.im</code>这个根域名(Apex Domain)，在按照
+<a href="https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages" target="_blank" rel="external">GitHub Pages文档</a>上提供的信息，对<code>theo.im</code>设置了<strong>A记录</strong>，但是通过执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I http://theo.im/sitemap.xml</span><br></pre></td></tr></table></figure>
+<p>发现得到的是302转向，不符合Sitemap协议的要求：</p>
+<blockquote><p>A successful request will return an HTTP 200 response code; if you receive a different response, you should resubmit your request. The HTTP 200 response code only indicates that the search engine has received your Sitemap, not that the Sitemap itself or the URLs contained in it were valid.</p>
+<footer><strong>sitemaps.org</strong><cite><a href="http://www.sitemaps.org/protocol.html" target="_blank" rel="external">Sitemaps Protocol</a></cite></footer></blockquote>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>通过搜索，我发现需要使用<strong>ALIAS记录</strong>解析根域名，但是由于我之前使用的是<a href="http://dnspod.cn" target="_blank" rel="external">DNSPod</a>
+的服务，不支持<strong>ALIAS记录</strong>，因此决定换加DNS域名解析商。</p>
+<p>经过一番搜寻，找到了两家支持<strong>ALIAS记录</strong>的DNS域名解析商：</p>
+<ol>
+<li><a href="https://dnsimple.com/" target="_blank" rel="external">DNSimple</a>: 全收费服务</li>
+<li><a href="https://pointhq.com/" target="_blank" rel="external">PointDNS</a>: 有免费的开发者账户</li>
+</ol>
+<p>本着能用收费不用免费的原则，因此我选择了 <a href="https://dnsimple.com/" target="_blank" rel="external">DNSimple</a> 来解析我的域名 (゜o゜(☆○=(-_-)</p>
+<p><img src="http://theo-im.qiniudn.com/images/github-pages-dns-buybuybuy.jpg" alt=""></p>
+<p>OK，万文不如一图：</p>
+<p><img src="http://theo-im.qiniudn.com/images/github-pages-dns-setup.png" alt=""></p>
+<p>最后，运行 <code>dig theo.im +nostats +nocomments +nocmd</code> 检查DNS是否生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">; &lt;&lt;&gt;&gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &lt;&lt;&gt;&gt; theo.im +nostats +nocomments +nocmd</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;theo.im.           IN  A</span><br><span class="line">theo.im.        3600    IN  A   199.27.79.133</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/" data-id="cioi3283j000gbmsmm41trrq2" class="article-share-link">Share</a>
+      
+        <a href="http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dns/">DNS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">GitHub</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    <div class="widget-wrap">
+  <h3 class="widget-title">About</h3>
+  <div class="widget">
+    <img src="https://www.gravatar.com/avatar/27eba4a33a317761c17d96f1f009ae49?s=200" style="margin: auto; width: 100%"/>
+    <h4 style="text-align: center"><strong>Timon Wong (timonwong)</strong></h4>
+    <div class="about-links-holder">
+    
+      <a id="about-github-link" class="about-icon" href="https://github.com/timonwong" title="GitHub"></a>
+    
+    
+      <a id="about-twitter-link" class="about-icon" href="https://twitter.com/timonwong" title="Twitter"></a>
+    
+    
+      <a id="about-weibo-link" class="about-icon" href="http://weibo.com/uglifycode" title="Weibo"></a>
+    
+    
+      <a id="about-email-link" class="about-icon" href="mailto:timon86.wang@gmail.com" title="Mail"></a>
+    
+    </div>
+  </div>
+</div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/it/">IT</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/miscellaneous/">Miscellaneous</a></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/2014/08/13/count-text-element-count-in-python/">在 Python 中统计文本字符个数</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/08/08/Golang-memory-part-1/">Golang 内存模型（一）</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/">删除 Intel HD Graphics 显卡工具的全局快捷键</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Timon Wong<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script type="text/javascript">
+  var Swiftype = window.Swiftype || {};
+  (function() {
+    Swiftype.key = '_Fmagrbt4RavhXm_Hz4j';
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = "//s.swiftypecdn.com/embed.js";
+    var entry = document.getElementsByTagName('script')[0];
+    entry.parentNode.insertBefore(script, entry);
+  }());
+</script>
+
+
+
+<script type="text/javascript">
+  var disqus_shortname = 'theoim';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//go.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.lug.ustc.edu.cn/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-35644871-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+
+
+  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
