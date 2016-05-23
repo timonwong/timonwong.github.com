@@ -3,12 +3,12 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>Tag: Git | Timon Wong&#39;s Blog</title>
+  <title>Archives: 2016 | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Timon Wong's Blog">
-<meta property="og:url" content="http://theo.im/tags/git/index.html">
+<meta property="og:url" content="http://theo.im/blog/archives/2016/index.html">
 <meta property="og:site_name" content="Timon Wong's Blog">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -73,10 +73,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-directory-comparison-for-git-difftool" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-evaluating-new-docker-for-mac-beta" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/2012/10/27/directory-comparison-for-git-difftool/" class="article-date">
-  <time datetime="2012-10-27T15:02:00.000Z" itemprop="datePublished">Oct 27 2012</time>
+    <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" class="article-date">
+  <time datetime="2016-05-22T13:47:02.000Z" itemprop="datePublished">May 22 2016</time>
 </a>
     
   <div class="article-category">
@@ -91,7 +91,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/2012/10/27/directory-comparison-for-git-difftool/">Directory comparison for git difftool, with Beyond Compare 3</a>
+      <a class="article-title" href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
     </h1>
   
 
@@ -99,27 +99,83 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>For a long time, I didn’t know a way to do directory comparison using git difftool command, <a href="http://mercurial.selenic.com/wiki/ExtdiffExtension" target="_blank" rel="external">extdiff extension</a> from Mercurial did perform much more superior than Git.</p>
-<p>Though it may be a bit out of date, I just found that after <code>v1.7.11</code>, Git now supports directory comparison through <code>--dir-diff</code> option, fantastic!</p>
-<p><strong>UPDATE 12/11/2012:</strong> You will need v1.8.0 version of <a href="http://code.google.com/p/msysgit/downloads/list" target="_blank" rel="external">msysgit</a> installed, as noted by <strong>Scooter Software</strong> (<a href="http://www.scootersoftware.com/vbulletin/showthread.php?t=9449" target="_blank" rel="external">Reference</a>).</p>
-<p>So here is a list of steps for me to make Beyond Compare 3 and Git directory comparison work under Windows.</p>
-<p>First of all, Execute following commands in the <code>Git Bash</code> shell (or just modify your .gitconfig directly). You may need to change the folder where <code>BCompare.exe</code> resides.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global diff.tool bc3</span><br><span class="line">git config --global difftool.bc3.cmd &quot;\&quot;c:/Program Files/Beyond Compare 3/BCompare.exe\&quot; \&quot;$LOCAL\&quot; \&quot;$REMOTE\&quot;&quot;</span><br><span class="line">git config --global difftool.prompt false</span><br></pre></td></tr></table></figure>
-<p><strong>NOTE:</strong> Instead of <code>bcomp.exe</code>, use <code>BCompare.exe</code>, because I’ve found <code>bcomp.exe</code> returns too early, which will cause errors like this:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...Git/libexec/git-core\git-difftool line 444: Bad file number</span><br></pre></td></tr></table></figure>
-<p>Then make an alias for difftool:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.dt &quot;difftool --dir-diff&quot;</span><br></pre></td></tr></table></figure>
-<p>Now, you can use <code>git dt</code> to open Beyond Compare 3 for directory comparison in git repositories.</p>
+        <h2 id="如何申请-Docker-for-Mac-Beta"><a href="#如何申请-Docker-for-Mac-Beta" class="headerlink" title="如何申请 Docker for Mac Beta"></a>如何申请 Docker for Mac Beta</h2><p>请访问这个地址申请，可能需要等几天：<a href="https://beta.docker.com/" target="_blank" rel="external">https://beta.docker.com/</a></p>
+<p>Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 <a href="https://github.com/mist64/xhyve" target="_blank" rel="external">xhyve</a> 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。</p>
+<p>另外，这个版本的 Docker for Mac 使用了 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版，作为一个更轻量化的发行版，与一般的发行版有不少区别，比如，使用 <code>ash</code> 替换 <code>bash</code> 等，具体请访问 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 网站获取更多信息。</p>
+<h2 id="使用-Docker-Hub-Registry-Mirror"><a href="#使用-Docker-Hub-Registry-Mirror" class="headerlink" title="使用 Docker Hub Registry Mirror"></a>使用 Docker Hub Registry Mirror</h2><p>由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 <a href="https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/" target="_blank" rel="external">USTC 的 Docker Hub Mirror</a>。</p>
+<p>就如同之前所说，<a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版与一般发行版有巨大区别，因此调整 Docker Daemon 的启动参数也不大一样😂</p>
+<h3 id="Quick-Way"><a href="#Quick-Way" class="headerlink" title="Quick Way"></a>Quick Way</h3><p><strong>NOTE:</strong> 安装了 <code>jq</code> 命令行工具（可以通过 <code>brew install jq</code> 安装），可以直接执行一行命令行搞定，否则请参阅「Slow Way」一节：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon | jq -cm <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</span><br></pre></td></tr></table></figure>
+<h3 id="Slow-Way"><a href="#Slow-Way" class="headerlink" title="Slow Way"></a>Slow Way</h3><h4 id="1-导出当前的设置"><a href="#1-导出当前的设置" class="headerlink" title="1. 导出当前的设置"></a>1. 导出当前的设置</h4><p>运行以下命令，将当前设置保存到 <code>docker-config.json</code> 文件中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon &gt; docker-config.json</span><br><span class="line"><span class="comment">## &gt;&gt; &#123;"storage-driver":"aufs","debug":true&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-使用文本编辑器编辑设置"><a href="#2-使用文本编辑器编辑设置" class="headerlink" title="2. 使用文本编辑器编辑设置"></a>2. 使用文本编辑器编辑设置</h4><p>使用任何一种文本编辑器，打开 <code>docker-config.json</code> 并按照 <code>JSON</code> 格式编辑为以下内容，然后保存并退出：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"storage-driver"</span>:<span class="string">"aufs"</span>,<span class="attr">"debug"</span>:<span class="literal">true</span>,<span class="attr">"registry-mirrors"</span>:[<span class="string">"https://docker.mirrors.ustc.edu.cn"</span>]&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-加载最新设置"><a href="#3-加载最新设置" class="headerlink" title="3. 加载最新设置"></a>3. 加载最新设置</h4><p>最后，加载 <code>docker-config.json</code> 中的设置就可以了：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata set daemon @docker-config.json</span><br></pre></td></tr></table></figure>
+<h2 id="获取-Docker-Guest-的-IP-地址"><a href="#获取-Docker-Guest-的-IP-地址" class="headerlink" title="获取 Docker Guest 的 IP 地址"></a>获取 Docker Guest 的 IP 地址</h2><p>有时候，我们需要得到 Docker Guest 的 IP 地址，其实不大有比较快捷的方法，比如，先运行 <code>pinata get network</code>，居然返回这个？？WTF？！</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnet</span><br></pre></td></tr></table></figure>
+<p>然后只有运行 <code>pinata list</code> 了：</p>
+<pre><code>These are advanced configuration settings to customise Docker.app on MacOSX.
+You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
+
+🐳  hostname = docker
+   Hostname of the virtual machine endpoint, where container ports will be
+   exposed if using nat networking. Access it via &apos;docker.local&apos;.
+
+🐳  hypervisor = native (memory=2, ncpu=2)
+   The Docker.app includes embedded hypervisors that run the virtual machines
+   that power the containers. This setting allows you to control which the
+   default one used for Linux is.
+
+ ▸  native: a version of the xhyve hypervisor that uses the MacOSX
+              Hypervisor.framework to run container VMs. Parameters:
+              memory (VM memory in gigabytes), ncpu (vCPUs)
+
+
+🐳  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+   Controls how local containers can access the external network via the
+   MacOS X host. This includes outbound traffic as well as publishing ports
+   for external access to the local containers.
+
+ ▸ hostnet: a mode that helps if you are using a VPN that restricts
+              connectivity. Activating this mode will proxy container network
+              packets via the Docker.app process as host socket traffic.
+              Parameters: docker-ipv4 (docker node), host-ipv4 (host node)
+ ▸     nat: a mode that uses the MacOS X vmnet.framework to route container
+              traffic to the host network via a NAT.
+
+🐳  filesystem = osxfs
+   Controls the mode by which files from the MacOS X host and the container
+   filesystem are shared with each other.
+
+ ▸   osxfs: a FUSE-based filesystem that bidirectionally forwards OSX
+              filesystem events into the container.
+
+
+🐳  native/port-forwarding = true
+   Expose container ports on the Mac, rather than the VM
+
+ ▸    true: Container ports will be exposed on the Mac
+ ▸   false: Container ports will be exposed on the VM
+
+🐳  daemon = run &apos;pinata get daemon&apos; or &apos;pinata set daemon [@file|-]&gt;
+   JSON configuration of the local Docker daemon. Configure any custom
+   options you need as documented in:
+   https://docs.docker.com/engine/reference/commandline/daemon/. Set it
+   directly, or a @file or - for stdin.
+</code></pre><p>因此看起来使用 <code>pinata list | grep &#39;network =&#39;</code> 才是合理的方式之一：</p>
+<pre><code>*  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+</code></pre><p>以上</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/" data-id="ciojdj5i90000hjsmvspcc2oy" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="ciojdj5jt0014hjsm9nciccz5" class="article-share-link">Share</a>
       
-        <a href="http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">Git</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/osx/">OSX</a></li></ul>
 
     </footer>
   </div>
@@ -299,23 +355,6 @@ ga('send', 'pageview');
 
 
 
-  </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"processEscapes":"true,","inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"]}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

@@ -73,6 +73,61 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-directory-comparison-for-git-difftool" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2012/10/27/directory-comparison-for-git-difftool/" class="article-date">
+  <time datetime="2012-10-27T15:02:00.000Z" itemprop="datePublished">Oct 27 2012</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/it/">IT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2012/10/27/directory-comparison-for-git-difftool/">Directory comparison for git difftool, with Beyond Compare 3</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>For a long time, I didn’t know a way to do directory comparison using git difftool command, <a href="http://mercurial.selenic.com/wiki/ExtdiffExtension" target="_blank" rel="external">extdiff extension</a> from Mercurial did perform much more superior than Git.</p>
+<p>Though it may be a bit out of date, I just found that after <code>v1.7.11</code>, Git now supports directory comparison through <code>--dir-diff</code> option, fantastic!</p>
+<p><strong>UPDATE 12/11/2012:</strong> You will need v1.8.0 version of <a href="http://code.google.com/p/msysgit/downloads/list" target="_blank" rel="external">msysgit</a> installed, as noted by <strong>Scooter Software</strong> (<a href="http://www.scootersoftware.com/vbulletin/showthread.php?t=9449" target="_blank" rel="external">Reference</a>).</p>
+<p>So here is a list of steps for me to make Beyond Compare 3 and Git directory comparison work under Windows.</p>
+<p>First of all, Execute following commands in the <code>Git Bash</code> shell (or just modify your .gitconfig directly). You may need to change the folder where <code>BCompare.exe</code> resides.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global diff.tool bc3</span><br><span class="line">git config --global difftool.bc3.cmd &quot;\&quot;c:/Program Files/Beyond Compare 3/BCompare.exe\&quot; \&quot;$LOCAL\&quot; \&quot;$REMOTE\&quot;&quot;</span><br><span class="line">git config --global difftool.prompt false</span><br></pre></td></tr></table></figure>
+<p><strong>NOTE:</strong> Instead of <code>bcomp.exe</code>, use <code>BCompare.exe</code>, because I’ve found <code>bcomp.exe</code> returns too early, which will cause errors like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...Git/libexec/git-core\git-difftool line 444: Bad file number</span><br></pre></td></tr></table></figure>
+<p>Then make an alias for difftool:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.dt &quot;difftool --dir-diff&quot;</span><br></pre></td></tr></table></figure>
+<p>Now, you can use <code>git dt</code> to open Beyond Compare 3 for directory comparison in git repositories.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/" data-id="ciojdj5i90000hjsmvspcc2oy" class="article-share-link">Share</a>
+      
+        <a href="http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">Git</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-workaround-failed-to-import-unicodedata-in-sublime-text-2-under-windows" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/2012/10/25/workaround-failed-to-import-unicodedata-in-sublime-text-2-under-windows/" class="article-date">
@@ -110,7 +165,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2012/10/25/workaround-failed-to-import-unicodedata-in-sublime-text-2-under-windows/" data-id="cioi3282s0000bmsmvbkgo4zu" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2012/10/25/workaround-failed-to-import-unicodedata-in-sublime-text-2-under-windows/" data-id="ciojdj5ih0001hjsmkexd864h" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2012/10/25/workaround-failed-to-import-unicodedata-in-sublime-text-2-under-windows/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -171,7 +226,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -180,7 +235,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -189,7 +244,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -199,6 +254,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
+          </li>
         
           <li>
             <a href="/blog/2014/08/13/count-text-element-count-in-python/">在 Python 中统计文本字符个数</a>
@@ -214,10 +273,6 @@
         
           <li>
             <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
           </li>
         
       </ul>
@@ -300,6 +355,23 @@ ga('send', 'pageview');
 
 
 
-  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"processEscapes":"true,","inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"]}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 </body>
 </html>

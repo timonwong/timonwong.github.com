@@ -73,6 +73,117 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-evaluating-new-docker-for-mac-beta" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" class="article-date">
+  <time datetime="2016-05-22T13:47:02.000Z" itemprop="datePublished">May 22 2016</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/it/">IT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="如何申请-Docker-for-Mac-Beta"><a href="#如何申请-Docker-for-Mac-Beta" class="headerlink" title="如何申请 Docker for Mac Beta"></a>如何申请 Docker for Mac Beta</h2><p>请访问这个地址申请，可能需要等几天：<a href="https://beta.docker.com/" target="_blank" rel="external">https://beta.docker.com/</a></p>
+<p>Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 <a href="https://github.com/mist64/xhyve" target="_blank" rel="external">xhyve</a> 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。</p>
+<p>另外，这个版本的 Docker for Mac 使用了 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版，作为一个更轻量化的发行版，与一般的发行版有不少区别，比如，使用 <code>ash</code> 替换 <code>bash</code> 等，具体请访问 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 网站获取更多信息。</p>
+<h2 id="使用-Docker-Hub-Registry-Mirror"><a href="#使用-Docker-Hub-Registry-Mirror" class="headerlink" title="使用 Docker Hub Registry Mirror"></a>使用 Docker Hub Registry Mirror</h2><p>由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 <a href="https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/" target="_blank" rel="external">USTC 的 Docker Hub Mirror</a>。</p>
+<p>就如同之前所说，<a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版与一般发行版有巨大区别，因此调整 Docker Daemon 的启动参数也不大一样😂</p>
+<h3 id="Quick-Way"><a href="#Quick-Way" class="headerlink" title="Quick Way"></a>Quick Way</h3><p><strong>NOTE:</strong> 安装了 <code>jq</code> 命令行工具（可以通过 <code>brew install jq</code> 安装），可以直接执行一行命令行搞定，否则请参阅「Slow Way」一节：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon | jq -cm <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</span><br></pre></td></tr></table></figure>
+<h3 id="Slow-Way"><a href="#Slow-Way" class="headerlink" title="Slow Way"></a>Slow Way</h3><h4 id="1-导出当前的设置"><a href="#1-导出当前的设置" class="headerlink" title="1. 导出当前的设置"></a>1. 导出当前的设置</h4><p>运行以下命令，将当前设置保存到 <code>docker-config.json</code> 文件中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon &gt; docker-config.json</span><br><span class="line"><span class="comment">## &gt;&gt; &#123;"storage-driver":"aufs","debug":true&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-使用文本编辑器编辑设置"><a href="#2-使用文本编辑器编辑设置" class="headerlink" title="2. 使用文本编辑器编辑设置"></a>2. 使用文本编辑器编辑设置</h4><p>使用任何一种文本编辑器，打开 <code>docker-config.json</code> 并按照 <code>JSON</code> 格式编辑为以下内容，然后保存并退出：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"storage-driver"</span>:<span class="string">"aufs"</span>,<span class="attr">"debug"</span>:<span class="literal">true</span>,<span class="attr">"registry-mirrors"</span>:[<span class="string">"https://docker.mirrors.ustc.edu.cn"</span>]&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-加载最新设置"><a href="#3-加载最新设置" class="headerlink" title="3. 加载最新设置"></a>3. 加载最新设置</h4><p>最后，加载 <code>docker-config.json</code> 中的设置就可以了：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata set daemon @docker-config.json</span><br></pre></td></tr></table></figure>
+<h2 id="获取-Docker-Guest-的-IP-地址"><a href="#获取-Docker-Guest-的-IP-地址" class="headerlink" title="获取 Docker Guest 的 IP 地址"></a>获取 Docker Guest 的 IP 地址</h2><p>有时候，我们需要得到 Docker Guest 的 IP 地址，其实不大有比较快捷的方法，比如，先运行 <code>pinata get network</code>，居然返回这个？？WTF？！</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnet</span><br></pre></td></tr></table></figure>
+<p>然后只有运行 <code>pinata list</code> 了：</p>
+<pre><code>These are advanced configuration settings to customise Docker.app on MacOSX.
+You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
+
+🐳  hostname = docker
+   Hostname of the virtual machine endpoint, where container ports will be
+   exposed if using nat networking. Access it via &apos;docker.local&apos;.
+
+🐳  hypervisor = native (memory=2, ncpu=2)
+   The Docker.app includes embedded hypervisors that run the virtual machines
+   that power the containers. This setting allows you to control which the
+   default one used for Linux is.
+
+ ▸  native: a version of the xhyve hypervisor that uses the MacOSX
+              Hypervisor.framework to run container VMs. Parameters:
+              memory (VM memory in gigabytes), ncpu (vCPUs)
+
+
+🐳  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+   Controls how local containers can access the external network via the
+   MacOS X host. This includes outbound traffic as well as publishing ports
+   for external access to the local containers.
+
+ ▸ hostnet: a mode that helps if you are using a VPN that restricts
+              connectivity. Activating this mode will proxy container network
+              packets via the Docker.app process as host socket traffic.
+              Parameters: docker-ipv4 (docker node), host-ipv4 (host node)
+ ▸     nat: a mode that uses the MacOS X vmnet.framework to route container
+              traffic to the host network via a NAT.
+
+🐳  filesystem = osxfs
+   Controls the mode by which files from the MacOS X host and the container
+   filesystem are shared with each other.
+
+ ▸   osxfs: a FUSE-based filesystem that bidirectionally forwards OSX
+              filesystem events into the container.
+
+
+🐳  native/port-forwarding = true
+   Expose container ports on the Mac, rather than the VM
+
+ ▸    true: Container ports will be exposed on the Mac
+ ▸   false: Container ports will be exposed on the VM
+
+🐳  daemon = run &apos;pinata get daemon&apos; or &apos;pinata set daemon [@file|-]&gt;
+   JSON configuration of the local Docker daemon. Configure any custom
+   options you need as documented in:
+   https://docs.docker.com/engine/reference/commandline/daemon/. Set it
+   directly, or a @file or - for stdin.
+</code></pre><p>因此看起来使用 <code>pinata list | grep &#39;network =&#39;</code> 才是合理的方式之一：</p>
+<pre><code>*  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+</code></pre><p>以上</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="ciojdj5jt0014hjsm9nciccz5" class="article-share-link">Share</a>
+      
+        <a href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/osx/">OSX</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-count-text-element-count-in-python" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/2014/08/13/count-text-element-count-in-python/" class="article-date">
@@ -110,7 +221,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="cioi328400014bmsmpovevhsi" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="ciojdj5jz0016hjsm17n8cppk" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -166,7 +277,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="cioi3283x0011bmsmxzqovnhi" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="ciojdj5js0011hjsm0knoh2vd" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/08/Golang-memory-part-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -214,7 +325,7 @@
 <li>Ctrl + Shift + Right</li>
 </ul>
 <p>这些快捷键都是由 <code>igfxHK.exe</code> 注册的，虽然可以在任务栏中点击禁用快捷键，但是由于快捷键是全局注册，其它应用程序仍然不能使用这些快捷键。</p>
-<p>虽然使用 <code>taskkill /IM igfxHK.exe</code> 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 <code>igfxHK.exe</code> 
+<p>虽然使用 <code>taskkill /IM igfxHK.exe</code> 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 <code>igfxHK.exe</code>
 占有这些全局快捷键。</p>
 <p>注册表文件如下，保存为一个 <code>.reg</code> 文件最后双击运行并导入到注册表即可。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]</span><br><span class="line">&quot;3101&quot;=-</span><br><span class="line">&quot;3105&quot;=-</span><br><span class="line">&quot;3121&quot;=-</span><br><span class="line">&quot;9530&quot;=-</span><br><span class="line">&quot;3106&quot;=-</span><br><span class="line">&quot;3107&quot;=-</span><br><span class="line">&quot;3108&quot;=-</span><br><span class="line">&quot;3109&quot;=-</span><br><span class="line">&quot;3110&quot;=-</span><br><span class="line">&quot;4528&quot;=-</span><br><span class="line">&quot;10&quot;=-</span><br><span class="line">&quot;11&quot;=-</span><br></pre></td></tr></table></figure>
@@ -222,7 +333,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="cioi3283w000ybmsmu6ml8me0" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="ciojdj5jo000yhjsm2pylnkfo" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -277,67 +388,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="cioi3283u000ubmsmb8iqmfbc" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="ciojdj5jk000uhjsmssabueij" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Printing-stacktrace-in-Go" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/" class="article-date">
-  <time datetime="2014-07-21T13:30:12.000Z" itemprop="datePublished">Jul 21 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/it/">IT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight go"><figcaption><span>打印 stacktrace</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1</span>&lt;&lt;<span class="number">16</span>)</span><br><span class="line"><span class="comment">// 获取 **所有** goroutine 的 stacktrace</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line"><span class="comment">// 如果需要获取 **当前** goroutine 的 stacktrace, 第二个参数需要为 `false`</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(buf))</span><br></pre></td></tr></table></figure>
-<p>太诡异了，居然要指定 buffer 的大小，用起来不方便。虽然可以给个“足够大” buffer 用来容纳
-stacktrace，但是什么是“足够大”？</p>
-<p>为了确认 <code>runtime.Stack()</code> 函数的 behavior，需要参考一下 Go 输出 stacktrace 的实现代码。该代码是使用 <a href="https://code.google.com/p/go/source/browse/src/cmd/dist/goc2c.c" target="_blank" rel="external">GOC</a> 写成的。</p>
-<blockquote>
-<p>A .goc file is a combination of a limited form of Go with C.</p>
-</blockquote>
-<figure class="highlight go"><figcaption><span>mprof.goc</span><a href="https://code.google.com/p/go/source/browse/src/pkg/runtime/mprof.goc?name=release-branch.go1.3#382" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Stack</span><span class="params">(b Slice, all <span class="keyword">bool</span>)</span> <span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">uintptr</span> pc, sp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Stack pointer</span></span><br><span class="line">    sp = runtime·getcallersp(&amp;b);</span><br><span class="line">    <span class="comment">// Programer pointer</span></span><br><span class="line">    pc = (<span class="keyword">uintptr</span>)runtime·getcallerpc(&amp;b);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果选择输出所有 goroutine 的 traceback, 挂起所有goroutine,</span></span><br><span class="line">    <span class="comment">// 在本函数完成后恢复</span></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        runtime·semacquire(&amp;runtime·worldsema, <span class="literal">false</span>);</span><br><span class="line">        m-&gt;gcing = <span class="number">1</span>;</span><br><span class="line">        runtime·stoptheworld();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(b.<span class="built_in">len</span> == <span class="number">0</span>)</span><br><span class="line">        n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">// 重定向输出缓冲, 打印到 `b` 这个buffer里</span></span><br><span class="line">        g-&gt;writebuf = (<span class="keyword">byte</span>*)b.array;</span><br><span class="line">        <span class="comment">// buffer具有固定大小, 因此会截断</span></span><br><span class="line">        g-&gt;writenbuf = b.<span class="built_in">len</span>;</span><br><span class="line">        <span class="comment">// proc.c: runtime·goroutineheader</span></span><br><span class="line">        runtime·goroutineheader(g);</span><br><span class="line">        <span class="comment">// traceback_$&#123;arch&#125;.c</span></span><br><span class="line">        runtime·traceback(pc, sp, <span class="number">0</span>, g);</span><br><span class="line">        <span class="keyword">if</span>(all)</span><br><span class="line">            runtime·tracebackothers(g);</span><br><span class="line">        n = b.<span class="built_in">len</span> - g-&gt;writenbuf;</span><br><span class="line">        g-&gt;writebuf = <span class="literal">nil</span>;</span><br><span class="line">        g-&gt;writenbuf = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        m-&gt;gcing = <span class="number">0</span>;</span><br><span class="line">        runtime·semrelease(&amp;runtime·worldsema);</span><br><span class="line">        runtime·starttheworld();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>因为打印到buffer会截断过长的结果，因此可以写一个包装函数：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StackTrace</span><span class="params">(all <span class="keyword">bool</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="comment">// Reserve 10K buffer at first</span></span><br><span class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">10240</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        size := runtime.Stack(buf, all)</span><br><span class="line">        <span class="comment">// The size of the buffer may be not enough to hold the stacktrace,</span></span><br><span class="line">        <span class="comment">// so double the buffer size</span></span><br><span class="line">        <span class="keyword">if</span> size == <span class="built_in">len</span>(buf) &#123;</span><br><span class="line">            buf = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="built_in">len</span>(buf)&lt;&lt;<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">string</span>(buf)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>例子可以在这里看到：<a href="http://play.golang.org/p/4ABrCVbH9g" target="_blank" rel="external">Go Playground</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/" data-id="cioi3283s000rbmsm9hv1ymn6" class="article-share-link">Share</a>
-      
-        <a href="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/go/">Go</a></li></ul>
 
     </footer>
   </div>
@@ -393,7 +449,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -402,7 +458,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -411,7 +467,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -421,6 +477,10 @@ stacktrace，但是什么是“足够大”？</p>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
+          </li>
         
           <li>
             <a href="/blog/2014/08/13/count-text-element-count-in-python/">在 Python 中统计文本字符个数</a>
@@ -436,10 +496,6 @@ stacktrace，但是什么是“足够大”？</p>
         
           <li>
             <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
           </li>
         
       </ul>

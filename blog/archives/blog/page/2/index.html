@@ -73,6 +73,61 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Printing-stacktrace-in-Go" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/" class="article-date">
+  <time datetime="2014-07-21T13:30:12.000Z" itemprop="datePublished">Jul 21 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/it/">IT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight go"><figcaption><span>打印 stacktrace</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1</span>&lt;&lt;<span class="number">16</span>)</span><br><span class="line"><span class="comment">// 获取 **所有** goroutine 的 stacktrace</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line"><span class="comment">// 如果需要获取 **当前** goroutine 的 stacktrace, 第二个参数需要为 `false`</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(buf))</span><br></pre></td></tr></table></figure>
+<p>太诡异了，居然要指定 buffer 的大小，用起来不方便。虽然可以给个“足够大” buffer 用来容纳
+stacktrace，但是什么是“足够大”？</p>
+<p>为了确认 <code>runtime.Stack()</code> 函数的 behavior，需要参考一下 Go 输出 stacktrace 的实现代码。该代码是使用 <a href="https://code.google.com/p/go/source/browse/src/cmd/dist/goc2c.c" target="_blank" rel="external">GOC</a> 写成的。</p>
+<blockquote>
+<p>A .goc file is a combination of a limited form of Go with C.</p>
+</blockquote>
+<figure class="highlight go"><figcaption><span>mprof.goc</span><a href="https://code.google.com/p/go/source/browse/src/pkg/runtime/mprof.goc?name=release-branch.go1.3#382" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Stack</span><span class="params">(b Slice, all <span class="keyword">bool</span>)</span> <span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">uintptr</span> pc, sp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Stack pointer</span></span><br><span class="line">    sp = runtime·getcallersp(&amp;b);</span><br><span class="line">    <span class="comment">// Programer pointer</span></span><br><span class="line">    pc = (<span class="keyword">uintptr</span>)runtime·getcallerpc(&amp;b);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果选择输出所有 goroutine 的 traceback, 挂起所有goroutine,</span></span><br><span class="line">    <span class="comment">// 在本函数完成后恢复</span></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        runtime·semacquire(&amp;runtime·worldsema, <span class="literal">false</span>);</span><br><span class="line">        m-&gt;gcing = <span class="number">1</span>;</span><br><span class="line">        runtime·stoptheworld();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(b.<span class="built_in">len</span> == <span class="number">0</span>)</span><br><span class="line">        n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">// 重定向输出缓冲, 打印到 `b` 这个buffer里</span></span><br><span class="line">        g-&gt;writebuf = (<span class="keyword">byte</span>*)b.array;</span><br><span class="line">        <span class="comment">// buffer具有固定大小, 因此会截断</span></span><br><span class="line">        g-&gt;writenbuf = b.<span class="built_in">len</span>;</span><br><span class="line">        <span class="comment">// proc.c: runtime·goroutineheader</span></span><br><span class="line">        runtime·goroutineheader(g);</span><br><span class="line">        <span class="comment">// traceback_$&#123;arch&#125;.c</span></span><br><span class="line">        runtime·traceback(pc, sp, <span class="number">0</span>, g);</span><br><span class="line">        <span class="keyword">if</span>(all)</span><br><span class="line">            runtime·tracebackothers(g);</span><br><span class="line">        n = b.<span class="built_in">len</span> - g-&gt;writenbuf;</span><br><span class="line">        g-&gt;writebuf = <span class="literal">nil</span>;</span><br><span class="line">        g-&gt;writenbuf = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        m-&gt;gcing = <span class="number">0</span>;</span><br><span class="line">        runtime·semrelease(&amp;runtime·worldsema);</span><br><span class="line">        runtime·starttheworld();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为打印到buffer会截断过长的结果，因此可以写一个包装函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StackTrace</span><span class="params">(all <span class="keyword">bool</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="comment">// Reserve 10K buffer at first</span></span><br><span class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">10240</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        size := runtime.Stack(buf, all)</span><br><span class="line">        <span class="comment">// The size of the buffer may be not enough to hold the stacktrace,</span></span><br><span class="line">        <span class="comment">// so double the buffer size</span></span><br><span class="line">        <span class="keyword">if</span> size == <span class="built_in">len</span>(buf) &#123;</span><br><span class="line">            buf = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="built_in">len</span>(buf)&lt;&lt;<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">string</span>(buf)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例子可以在这里看到：<a href="http://play.golang.org/p/4ABrCVbH9g" target="_blank" rel="external">Go Playground</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/" data-id="ciojdj5jg000rhjsmn47xtzob" class="article-share-link">Share</a>
+      
+        <a href="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/go/">Go</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-use-aliyun-mirror-to-boost-up-download-speed" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/" class="article-date">
@@ -110,7 +165,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/" data-id="cioi3283o000obmsm4nglqsfi" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/" data-id="ciojdj5je000ohjsmd5lrw198" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -174,7 +229,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/" data-id="cioi3283l000jbmsm3uutsnsf" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/" data-id="ciojdj5jc000mhjsmdvvcdq1u" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -242,7 +297,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/" data-id="cioi3283n000mbmsmsml3m83r" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/" data-id="ciojdj5j9000jhjsmeh9ry9qu" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -306,93 +361,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/" data-id="cioi3283j000gbmsmm41trrq2" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/" data-id="ciojdj5j6000ghjsm5dprucjb" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dns/">DNS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/">GitHub</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-rabbitmq-note-2-about-simultaneous-connections" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/" class="article-date">
-  <time datetime="2014-05-13T08:16:21.000Z" itemprop="datePublished">May 13 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/it/">IT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/">RabbitMQ笔记（二）: 并发连接数</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>对于服务器来说，并发连接数一直是一个需要考量的问题，因此在这里做一个简单的测试。</p>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>在测试前，需要准备一个客户端环境，本文的环境是:</p>
-<ul>
-<li>CentOS 6.3</li>
-<li>Python 2.7.6<ul>
-<li><a href="http://kombu.readthedocs.org/" target="_blank" rel="external">Kombu</a></li>
-</ul>
-</li>
-</ul>
-<p><strong>NOTE:</strong> 下文中的 IP 地址 <code>10.10.0.70</code> 为 RabbitMQ 服务器的 IP 地址</p>
-<h3 id="测试-耗尽-rabbitmq-的-socket-descriptors"><a href="#测试-耗尽-rabbitmq-的-socket-descriptors" class="headerlink" title="测试: 耗尽 rabbitmq 的 socket descriptors"></a>测试: 耗尽 rabbitmq 的 socket descriptors</h3><p>首先, 编写一个脚本:</p>
-<figure class="highlight python"><figcaption><span>exhaust_socket_descriptors.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> config</span><br><span class="line"></span><br><span class="line">logging.basicConfig(format=<span class="string">'%(asctime)s - %(name)s - %(levelname)s - %(message)s'</span>,</span><br><span class="line">                    level=logging.INFO)</span><br><span class="line">LOG = logging.getLogger(os.path.basename(__file__))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    connections = []</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        LOG.info(<span class="string">"Try to establish a new rabbit connection..."</span>)</span><br><span class="line">        connection = config.get_connection()</span><br><span class="line">        connection.connect()</span><br><span class="line">        connections.append(connection)</span><br><span class="line">        LOG.info(<span class="string">"[%d] connections"</span>, len(connections))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<p>在<strong>客户端</strong>执行<code>exhaust_socket_descriptors.py</code>, 会看到如下输出:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">...前略...</span><br><span class="line">2014-05-13 10:45:17,477 - exhaust_socket_descriptors.py - INFO - Try to establish a new rabbit connection...</span><br><span class="line">2014-05-13 10:45:17,489 - exhaust_socket_descriptors.py - INFO - [826] connections</span><br><span class="line">2014-05-13 10:45:17,489 - exhaust_socket_descriptors.py - INFO - Try to establish a new rabbit connection...</span><br><span class="line">2014-05-13 10:45:17,502 - exhaust_socket_descriptors.py - INFO - [827] connections</span><br><span class="line">2014-05-13 10:45:17,502 - exhaust_socket_descriptors.py - INFO - Try to establish a new rabbit connection...</span><br><span class="line">2014-05-13 10:45:17,516 - exhaust_socket_descriptors.py - INFO - [828] connections</span><br><span class="line">2014-05-13 10:45:17,516 - exhaust_socket_descriptors.py - INFO - Try to establish a new rabbit connection...</span><br><span class="line">2014-05-13 10:45:17,528 - exhaust_socket_descriptors.py - INFO - [829] connections</span><br><span class="line">2014-05-13 10:45:17,529 - exhaust_socket_descriptors.py - INFO - Try to establish a new rabbit connection...</span><br></pre></td></tr></table></figure>
-<p>看到似乎是连接耗尽了，在<strong>服务器端</strong>上确认一下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vagrant]# rabbitmqctl status | grep sockets_</span><br><span class="line">      &#123;sockets_limit,829&#125;,</span><br><span class="line">      &#123;sockets_used,829&#125;]&#125;,</span><br></pre></td></tr></table></figure>
-<p><code>sockets_used</code> 与 <code>sockets_limit</code> 相同，可以确认 socket descriptors 耗尽了，因此客户端成功新连接，卡在
-<code>Try to establish a new rabbit connection...</code> 处。但是问题在于，<strong>为什么不超时？</strong></p>
-<p>在<strong>客户端</strong>中检查一下TCP连接个数:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# netstat -atn | grep 10.10.0.70:5672 | wc -l</span><br><span class="line">830</span><br></pre></td></tr></table></figure>
-<p>可以得出，socket连接数是830，大于服务器端的<code>sockets_limit</code></p>
-<p>继续，在<strong>客户端</strong>中，检查一下TCP连接状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# netstat -atn | grep 10.10.0.70:5672  | awk &apos;&#123;print $6&#125;&apos; | uniq</span><br><span class="line">ESTABLISHED</span><br></pre></td></tr></table></figure>
-<p><strong>全部都是ESTABLISHED状态</strong>，因此服务器仅仅是阻塞了新连接，而不是拒绝新连接。这样，就产生了一个问题：</p>
-<p>如果是使用 <a href="http://clusterlabs.org/" target="_blank" rel="external">HAProxy</a> 等工具搭建的集群，由于<strong>服务器依然会接受新连接</strong>，因此 <a href="http://clusterlabs.org/" target="_blank" rel="external">HAProxy</a> 不会认为节点已Down，<strong>最终会导致整个集群卡住</strong>；</p>
-<h3 id="Bug"><a href="#Bug" class="headerlink" title="Bug"></a>Bug</h3><p>当 RabbitMQ 的 <code>sockets_used</code> 达到 <code>sockets_limits</code> 时候（连接数耗尽时），最终即使是 Consumer
-也会全部阻塞，只有在 <code>sockets_used &lt; sockets_limit</code> 时（释放部分连接后），才会恢复。</p>
-<p>参见以下连接获取更多信息: <a href="http://markmail.org/message/r4yhvqc7vgfljpao" target="_blank" rel="external">http://markmail.org/message/r4yhvqc7vgfljpao</a></p>
-<h2 id="Workaround-增加File-Socket-Descriptors个数"><a href="#Workaround-增加File-Socket-Descriptors个数" class="headerlink" title="Workaround: 增加File/Socket Descriptors个数"></a>Workaround: 增加File/Socket Descriptors个数</h2><p>通过官方(包括EPEL)的 <code>deb</code>, <code>rpm</code> 包安装的启动脚本，都会在<code>rabbitmq-server</code>
-启动前 <code>source</code> 一次 <code>/etc/default/rabbitmq-server</code> 文件，因此我们可以在该文件中增加最大允许的
-File/Socket Descriptors 个数。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'ulimit -n 102400'</span> &gt; /etc/default/rabbitmq-server</span><br></pre></td></tr></table></figure>
-<p>最后，重启 RabbitMQ 服务器以生效该设置：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service rabbitmq-server restart</span><br></pre></td></tr></table></figure>
-<h2 id="Updated"><a href="#Updated" class="headerlink" title="Updated"></a>Updated</h2><h3 id="May-17-2014"><a href="#May-17-2014" class="headerlink" title="May 17, 2014"></a>May 17, 2014</h3><ul>
-<li>更新 Bug 说明 (RabbitMQ <code>bug26180</code>)</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/" data-id="cioi328390009bmsmop0xddn5" class="article-share-link">Share</a>
-      
-        <a href="http://theo.im/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li></ul>
 
     </footer>
   </div>
@@ -448,7 +422,7 @@ File/Socket Descriptors 个数。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -457,7 +431,7 @@ File/Socket Descriptors 个数。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -466,7 +440,7 @@ File/Socket Descriptors 个数。</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -476,6 +450,10 @@ File/Socket Descriptors 个数。</p>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
+          </li>
         
           <li>
             <a href="/blog/2014/08/13/count-text-element-count-in-python/">在 Python 中统计文本字符个数</a>
@@ -491,10 +469,6 @@ File/Socket Descriptors 个数。</p>
         
           <li>
             <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2014/07/21/Printing-stacktrace-in-Go/">在 Go 中获取 stacktrace</a>
           </li>
         
       </ul>

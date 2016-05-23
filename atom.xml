@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://theo.im/"/>
-  <updated>2016-05-21T15:40:47.000Z</updated>
+  <updated>2016-05-23T02:29:31.000Z</updated>
   <id>http://theo.im/</id>
   
   <author>
@@ -16,11 +16,102 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>试用最新的 Docker for Mac Beta</title>
+    <link href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/"/>
+    <id>http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/</id>
+    <published>2016-05-22T13:47:02.000Z</published>
+    <updated>2016-05-23T02:29:31.000Z</updated>
+    
+    <content type="html">&lt;h2 id=&quot;如何申请-Docker-for-Mac-Beta&quot;&gt;&lt;a href=&quot;#如何申请-Docker-for-Mac-Beta&quot; class=&quot;headerlink&quot; title=&quot;如何申请 Docker for Mac Beta&quot;&gt;&lt;/a&gt;如何申请 Docker for Mac Beta&lt;/h2&gt;&lt;p&gt;请访问这个地址申请，可能需要等几天：&lt;a href=&quot;https://beta.docker.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://beta.docker.com/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 &lt;a href=&quot;https://github.com/mist64/xhyve&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;xhyve&lt;/a&gt; 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。&lt;/p&gt;
+&lt;p&gt;另外，这个版本的 Docker for Mac 使用了 &lt;a href=&quot;http://alpinelinux.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Alpine Linux&lt;/a&gt; 发行版，作为一个更轻量化的发行版，与一般的发行版有不少区别，比如，使用 &lt;code&gt;ash&lt;/code&gt; 替换 &lt;code&gt;bash&lt;/code&gt; 等，具体请访问 &lt;a href=&quot;http://alpinelinux.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Alpine Linux&lt;/a&gt; 网站获取更多信息。&lt;/p&gt;
+&lt;h2 id=&quot;使用-Docker-Hub-Registry-Mirror&quot;&gt;&lt;a href=&quot;#使用-Docker-Hub-Registry-Mirror&quot; class=&quot;headerlink&quot; title=&quot;使用 Docker Hub Registry Mirror&quot;&gt;&lt;/a&gt;使用 Docker Hub Registry Mirror&lt;/h2&gt;&lt;p&gt;由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 &lt;a href=&quot;https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;USTC 的 Docker Hub Mirror&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;就如同之前所说，&lt;a href=&quot;http://alpinelinux.org/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Alpine Linux&lt;/a&gt; 发行版与一般发行版有巨大区别，因此调整 Docker Daemon 的启动参数也不大一样😂&lt;/p&gt;
+&lt;h3 id=&quot;Quick-Way&quot;&gt;&lt;a href=&quot;#Quick-Way&quot; class=&quot;headerlink&quot; title=&quot;Quick Way&quot;&gt;&lt;/a&gt;Quick Way&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; 安装了 &lt;code&gt;jq&lt;/code&gt; 命令行工具（可以通过 &lt;code&gt;brew install jq&lt;/code&gt; 安装），可以直接执行一行命令行搞定，否则请参阅「Slow Way」一节：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pinata get daemon | jq -cm &lt;span class=&quot;string&quot;&gt;&#39;.&quot;registry-mirrors&quot; = [&quot;https://docker.mirrors.ustc.edu.cn&quot;]&#39;&lt;/span&gt; | pinata &lt;span class=&quot;built_in&quot;&gt;set&lt;/span&gt; daemon -&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;Slow-Way&quot;&gt;&lt;a href=&quot;#Slow-Way&quot; class=&quot;headerlink&quot; title=&quot;Slow Way&quot;&gt;&lt;/a&gt;Slow Way&lt;/h3&gt;&lt;h4 id=&quot;1-导出当前的设置&quot;&gt;&lt;a href=&quot;#1-导出当前的设置&quot; class=&quot;headerlink&quot; title=&quot;1. 导出当前的设置&quot;&gt;&lt;/a&gt;1. 导出当前的设置&lt;/h4&gt;&lt;p&gt;运行以下命令，将当前设置保存到 &lt;code&gt;docker-config.json&lt;/code&gt; 文件中：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pinata get daemon &amp;gt; docker-config.json&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;## &amp;gt;&amp;gt; &amp;#123;&quot;storage-driver&quot;:&quot;aufs&quot;,&quot;debug&quot;:true&amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h4 id=&quot;2-使用文本编辑器编辑设置&quot;&gt;&lt;a href=&quot;#2-使用文本编辑器编辑设置&quot; class=&quot;headerlink&quot; title=&quot;2. 使用文本编辑器编辑设置&quot;&gt;&lt;/a&gt;2. 使用文本编辑器编辑设置&lt;/h4&gt;&lt;p&gt;使用任何一种文本编辑器，打开 &lt;code&gt;docker-config.json&lt;/code&gt; 并按照 &lt;code&gt;JSON&lt;/code&gt; 格式编辑为以下内容，然后保存并退出：&lt;/p&gt;
+&lt;figure class=&quot;highlight json&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;span class=&quot;attr&quot;&gt;&quot;storage-driver&quot;&lt;/span&gt;:&lt;span class=&quot;string&quot;&gt;&quot;aufs&quot;&lt;/span&gt;,&lt;span class=&quot;attr&quot;&gt;&quot;debug&quot;&lt;/span&gt;:&lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt;,&lt;span class=&quot;attr&quot;&gt;&quot;registry-mirrors&quot;&lt;/span&gt;:[&lt;span class=&quot;string&quot;&gt;&quot;https://docker.mirrors.ustc.edu.cn&quot;&lt;/span&gt;]&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h4 id=&quot;3-加载最新设置&quot;&gt;&lt;a href=&quot;#3-加载最新设置&quot; class=&quot;headerlink&quot; title=&quot;3. 加载最新设置&quot;&gt;&lt;/a&gt;3. 加载最新设置&lt;/h4&gt;&lt;p&gt;最后，加载 &lt;code&gt;docker-config.json&lt;/code&gt; 中的设置就可以了：&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pinata set daemon @docker-config.json&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;获取-Docker-Guest-的-IP-地址&quot;&gt;&lt;a href=&quot;#获取-Docker-Guest-的-IP-地址&quot; class=&quot;headerlink&quot; title=&quot;获取 Docker Guest 的 IP 地址&quot;&gt;&lt;/a&gt;获取 Docker Guest 的 IP 地址&lt;/h2&gt;&lt;p&gt;有时候，我们需要得到 Docker Guest 的 IP 地址，其实不大有比较快捷的方法，比如，先运行 &lt;code&gt;pinata get network&lt;/code&gt;，居然返回这个？？WTF？！&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;hostnet&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然后只有运行 &lt;code&gt;pinata list&lt;/code&gt; 了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;These are advanced configuration settings to customise Docker.app on MacOSX.
+You can set them via pinata set &amp;lt;key&amp;gt; &amp;lt;value&amp;gt; &amp;lt;options&amp;gt;.
+
+🐳  hostname = docker
+   Hostname of the virtual machine endpoint, where container ports will be
+   exposed if using nat networking. Access it via &amp;apos;docker.local&amp;apos;.
+
+🐳  hypervisor = native (memory=2, ncpu=2)
+   The Docker.app includes embedded hypervisors that run the virtual machines
+   that power the containers. This setting allows you to control which the
+   default one used for Linux is.
+
+ ▸  native: a version of the xhyve hypervisor that uses the MacOSX
+              Hypervisor.framework to run container VMs. Parameters:
+              memory (VM memory in gigabytes), ncpu (vCPUs)
+
+
+🐳  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+   Controls how local containers can access the external network via the
+   MacOS X host. This includes outbound traffic as well as publishing ports
+   for external access to the local containers.
+
+ ▸ hostnet: a mode that helps if you are using a VPN that restricts
+              connectivity. Activating this mode will proxy container network
+              packets via the Docker.app process as host socket traffic.
+              Parameters: docker-ipv4 (docker node), host-ipv4 (host node)
+ ▸     nat: a mode that uses the MacOS X vmnet.framework to route container
+              traffic to the host network via a NAT.
+
+🐳  filesystem = osxfs
+   Controls the mode by which files from the MacOS X host and the container
+   filesystem are shared with each other.
+
+ ▸   osxfs: a FUSE-based filesystem that bidirectionally forwards OSX
+              filesystem events into the container.
+
+
+🐳  native/port-forwarding = true
+   Expose container ports on the Mac, rather than the VM
+
+ ▸    true: Container ports will be exposed on the Mac
+ ▸   false: Container ports will be exposed on the VM
+
+🐳  daemon = run &amp;apos;pinata get daemon&amp;apos; or &amp;apos;pinata set daemon [@file|-]&amp;gt;
+   JSON configuration of the local Docker daemon. Configure any custom
+   options you need as documented in:
+   https://docs.docker.com/engine/reference/commandline/daemon/. Set it
+   directly, or a @file or - for stdin.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因此看起来使用 &lt;code&gt;pinata list | grep &amp;#39;network =&amp;#39;&lt;/code&gt; 才是合理的方式之一：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;*  network = hostnet (docker-ipv4=192.168.65.2, host-ipv4=192.168.65.1)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;以上&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;如何申请-Docker-for-Mac-Beta&quot;&gt;&lt;a href=&quot;#如何申请-Docker-for-Mac-Beta&quot; class=&quot;headerlink&quot; title=&quot;如何申请 Docker for Mac Beta&quot;&gt;&lt;/a&gt;如何申请 Docker fo
+    
+    </summary>
+    
+      <category term="IT" scheme="http://theo.im/blog/categories/it/"/>
+    
+    
+      <category term="Docker" scheme="http://theo.im/tags/docker/"/>
+    
+      <category term="OSX" scheme="http://theo.im/tags/osx/"/>
+    
+  </entry>
+  
+  <entry>
     <title>在 Python 中统计文本字符个数</title>
     <link href="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/"/>
     <id>http://theo.im/blog/2014/08/13/count-text-element-count-in-python/</id>
     <published>2014-08-13T06:05:02.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:48:17.000Z</updated>
     
     <content type="html">&lt;p&gt;字符集向来都是一个大问题，即使是 Python 3.x，也最多只是能说感谢 &lt;a href=&quot;http://en.wikipedia.org/wiki/Unicode&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Unicode&lt;/a&gt; 字符集，字符串的存取现在没有问题了。&lt;/p&gt;
 &lt;p&gt;Unicode 字符集的常见&lt;strong&gt;编码&lt;/strong&gt;有 &lt;a href=&quot;http://en.wikipedia.org/wiki/UTF-8&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;UTF-8&lt;/a&gt;、&lt;a href=&quot;http://en.wikipedia.org/wiki/UTF-16&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;UTF-16&lt;/a&gt;、&lt;a href=&quot;http://en.wikipedia.org/wiki/UTF-32&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;UTF-32&lt;/a&gt; 等常见格式，另外，&lt;a href=&quot;http://en.wikipedia.org/wiki/GB_18030&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;GB18030&lt;/a&gt; 也可以算其中一种（ GB18030，与 UTF-8 类似，是一种变长编码格式，最大的优势就是兼容 &lt;a href=&quot;http://en.wikipedia.org/wiki/GBK&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;GBK&lt;/a&gt;/&lt;a href=&quot;http://en.wikipedia.org/wiki/GB2312&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;GB2312&lt;/a&gt; ）&lt;/p&gt;
@@ -116,7 +207,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
     <link href="http://theo.im/blog/2014/08/08/Golang-memory-part-1/"/>
     <id>http://theo.im/blog/2014/08/08/Golang-memory-part-1/</id>
     <published>2014-08-08T00:39:44.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:48:23.000Z</updated>
     
     <content type="html">&lt;h2 id=&quot;开始之前&quot;&gt;&lt;a href=&quot;#开始之前&quot; class=&quot;headerlink&quot; title=&quot;开始之前&quot;&gt;&lt;/a&gt;开始之前&lt;/h2&gt;&lt;p&gt;首先，这是一篇菜B写的文章，可能会有理解错误的地方，发现错误请斧正，谢谢。&lt;/p&gt;
 &lt;p&gt;为了治疗我的懒癌早期，我一次就不写得太多了，这个系列想写很久了，每次都是开了个头就没有再写。这次争取把写完，弄成一个系列。&lt;/p&gt;
@@ -212,7 +303,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
     <link href="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/"/>
     <id>http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/</id>
     <published>2014-08-07T02:44:43.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:48:29.000Z</updated>
     
     <content type="html">&lt;p&gt;Intel的内置显卡工具总是注册全局的快捷键，而且还是常用的（比如 &lt;code&gt;Sublime Text&lt;/code&gt;, &lt;code&gt;PyCharm&lt;/code&gt;等工具的默认按键绑定），如下：&lt;/p&gt;
 &lt;ul&gt;
@@ -222,7 +313,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
 &lt;li&gt;Ctrl + Shift + Right&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;这些快捷键都是由 &lt;code&gt;igfxHK.exe&lt;/code&gt; 注册的，虽然可以在任务栏中点击禁用快捷键，但是由于快捷键是全局注册，其它应用程序仍然不能使用这些快捷键。&lt;/p&gt;
-&lt;p&gt;虽然使用 &lt;code&gt;taskkill /IM igfxHK.exe&lt;/code&gt; 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 &lt;code&gt;igfxHK.exe&lt;/code&gt; 
+&lt;p&gt;虽然使用 &lt;code&gt;taskkill /IM igfxHK.exe&lt;/code&gt; 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 &lt;code&gt;igfxHK.exe&lt;/code&gt;
 占有这些全局快捷键。&lt;/p&gt;
 &lt;p&gt;注册表文件如下，保存为一个 &lt;code&gt;.reg&lt;/code&gt; 文件最后双击运行并导入到注册表即可。&lt;/p&gt;
 &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Windows Registry Editor Version 5.00&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3101&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3105&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3121&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;9530&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3106&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3107&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3108&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3109&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;3110&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;4528&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;10&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;quot;11&amp;quot;=-&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
@@ -247,7 +338,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
     <link href="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/"/>
     <id>http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/</id>
     <published>2014-08-05T05:29:44.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:49:12.000Z</updated>
     
     <content type="html">&lt;p&gt;今天在公司机器上装了 VirtualBox (版本 4.3.14) 和 Vagrant, 在运行 &lt;code&gt;vagrant up&lt;/code&gt; 后总是提示虚拟机不能启动的错误。打开 VirtualBox 然后手动启动虚拟机发现如下错误框：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;http://theo-im.qiniudn.com/images/virtualbox-error.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
@@ -346,7 +437,7 @@ stacktrace，但是什么是“足够大”？&lt;/p&gt;
     <link href="http://theo.im/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/"/>
     <id>http://theo.im/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/</id>
     <published>2014-05-16T01:03:33.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:48:50.000Z</updated>
     
     <content type="html">&lt;p&gt;生成 RPM 包太麻烦了，最近知道了一个名为 &lt;a href=&quot;https://github.com/jordansissel/fpm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;FPM&lt;/a&gt; 的神器，在此记录一下。&lt;/p&gt;
 &lt;h2 id=&quot;安装-FPM&quot;&gt;&lt;a href=&quot;#安装-FPM&quot; class=&quot;headerlink&quot; title=&quot;安装 FPM&quot;&gt;&lt;/a&gt;安装 FPM&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; 测试系统为 RedHat 系的 CentOS 6.3，编译 Python 2.7.6 的 RPM 包。&lt;/p&gt;
@@ -395,7 +486,7 @@ stacktrace，但是什么是“足够大”？&lt;/p&gt;
     <link href="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/"/>
     <id>http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/</id>
     <published>2014-05-15T02:27:25.000Z</published>
-    <updated>2016-05-21T15:40:47.000Z</updated>
+    <updated>2016-05-22T13:48:43.000Z</updated>
     
     <content type="html">&lt;h2 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h2&gt;&lt;p&gt;这个问题存在很久了，现象就是使用 &lt;a href=&quot;https://pypi.python.org/pypi/pika/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Pika&lt;/a&gt; 库的客户端在发送大尺寸消息后，RabbitMQ
 没有收到，Consumer 那里会认为消息已丢失。&lt;/p&gt;
