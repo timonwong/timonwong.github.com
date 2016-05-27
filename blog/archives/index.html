@@ -105,7 +105,7 @@
 <h2 id="使用-Docker-Hub-Registry-Mirror"><a href="#使用-Docker-Hub-Registry-Mirror" class="headerlink" title="使用 Docker Hub Registry Mirror"></a>使用 Docker Hub Registry Mirror</h2><p>由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 <a href="https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/" target="_blank" rel="external">USTC 的 Docker Hub Mirror</a>。</p>
 <p>就如同之前所说，<a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版与一般发行版有巨大区别，因此调整 Docker Daemon 的启动参数也不大一样😂</p>
 <h3 id="Quick-Way"><a href="#Quick-Way" class="headerlink" title="Quick Way"></a>Quick Way</h3><p><strong>NOTE:</strong> 安装了 <code>jq</code> 命令行工具（可以通过 <code>brew install jq</code> 安装），可以直接执行一行命令行搞定，否则请参阅「Slow Way」一节：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon | jq -cm <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon | jq -cM <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</span><br></pre></td></tr></table></figure>
 <h3 id="Slow-Way"><a href="#Slow-Way" class="headerlink" title="Slow Way"></a>Slow Way</h3><h4 id="1-导出当前的设置"><a href="#1-导出当前的设置" class="headerlink" title="1. 导出当前的设置"></a>1. 导出当前的设置</h4><p>运行以下命令，将当前设置保存到 <code>docker-config.json</code> 文件中：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon &gt; docker-config.json</span><br><span class="line"><span class="comment">## &gt;&gt; &#123;"storage-driver":"aufs","debug":true&#125;</span></span><br></pre></td></tr></table></figure>
 <h4 id="2-使用文本编辑器编辑设置"><a href="#2-使用文本编辑器编辑设置" class="headerlink" title="2. 使用文本编辑器编辑设置"></a>2. 使用文本编辑器编辑设置</h4><p>使用任何一种文本编辑器，打开 <code>docker-config.json</code> 并按照 <code>JSON</code> 格式编辑为以下内容，然后保存并退出：</p>
@@ -170,7 +170,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="ciojdj5jt0014hjsm9nciccz5" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="ciopu3kxt000x1nsmohqfmpar" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -221,7 +221,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="ciojdj5jz0016hjsm17n8cppk" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="ciopu3ky200171nsm3qkg21gq" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -277,7 +277,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="ciojdj5js0011hjsm0knoh2vd" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="ciopu3kxv00111nsm5vm77f0t" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/08/Golang-memory-part-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -333,7 +333,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="ciojdj5jo000yhjsm2pylnkfo" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="ciopu3kxx00151nsmuurv72mw" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -388,7 +388,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="ciojdj5jk000uhjsmssabueij" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="ciopu3kxr000u1nsmlili9roy" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/#disqus_thread" class="article-comment-link">Comments</a>
       
