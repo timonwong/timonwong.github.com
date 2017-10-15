@@ -5,17 +5,17 @@
   
   <title>试用最新的 Docker for Mac Beta | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。 另外，这个版">
+  <meta name="description" content="DEPRECATION: 现在 Docker for Mac 已经可以通过界面配置 mirror 了，这片文章作废 如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也">
 <meta name="keywords" content="Docker,OSX">
 <meta property="og:type" content="article">
 <meta property="og:title" content="试用最新的 Docker for Mac Beta">
 <meta property="og:url" content="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/index.html">
 <meta property="og:site_name" content="Timon Wong&#39;s Blog">
-<meta property="og:description" content="如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。 另外，这个版">
-<meta property="og:updated_time" content="2016-05-27T14:38:33.000Z">
+<meta property="og:description" content="DEPRECATION: 现在 Docker for Mac 已经可以通过界面配置 mirror 了，这片文章作废 如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也">
+<meta property="og:updated_time" content="2017-10-15T04:20:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="试用最新的 Docker for Mac Beta">
-<meta name="twitter:description" content="如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。 另外，这个版">
+<meta name="twitter:description" content="DEPRECATION: 现在 Docker for Mac 已经可以通过界面配置 mirror 了，这片文章作废 如何申请 Docker for Mac Beta请访问这个地址申请，可能需要等几天：https://beta.docker.com/ Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 xhyve 作为其虚拟化方案（也">
 <meta name="twitter:creator" content="@timonwong">
   
     <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
@@ -99,7 +99,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="如何申请-Docker-for-Mac-Beta"><a href="#如何申请-Docker-for-Mac-Beta" class="headerlink" title="如何申请 Docker for Mac Beta"></a>如何申请 Docker for Mac Beta</h2><p>请访问这个地址申请，可能需要等几天：<a href="https://beta.docker.com/" target="_blank" rel="external">https://beta.docker.com/</a></p>
+        <p>DEPRECATION: 现在 Docker for Mac 已经可以通过界面配置 mirror 了，这片文章作废</p>
+<h2 id="如何申请-Docker-for-Mac-Beta"><a href="#如何申请-Docker-for-Mac-Beta" class="headerlink" title="如何申请 Docker for Mac Beta"></a>如何申请 Docker for Mac Beta</h2><p>请访问这个地址申请，可能需要等几天：<a href="https://beta.docker.com/" target="_blank" rel="external">https://beta.docker.com/</a></p>
 <p>Docker for Mac Beta，最大的好处就是不再依赖 VirtualBox VM 了，而是使用了更轻量化的 <a href="https://github.com/mist64/xhyve" target="_blank" rel="external">xhyve</a> 作为其虚拟化方案（也即是说，仍然不是原生的，还是需要虚拟化一个 Linux 出来在上面运行 Docker Daemon）。</p>
 <p>另外，这个版本的 Docker for Mac 使用了 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版，作为一个更轻量化的发行版，与一般的发行版有不少区别，比如，使用 <code>ash</code> 替换 <code>bash</code> 等，具体请访问 <a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 网站获取更多信息。</p>
 <h2 id="使用-Docker-Hub-Registry-Mirror"><a href="#使用-Docker-Hub-Registry-Mirror" class="headerlink" title="使用 Docker Hub Registry Mirror"></a>使用 Docker Hub Registry Mirror</h2><p>由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 <a href="https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/" target="_blank" rel="external">USTC 的 Docker Hub Mirror</a>。</p>
@@ -170,7 +171,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="cj8s8oamx0015vmsmzl1k9cxz" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="cj8s8u5ix001537smv0f5glgz" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/#disqus_thread" class="article-comment-link">Comments</a>
       
