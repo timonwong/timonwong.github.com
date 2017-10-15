@@ -5,15 +5,12 @@
   
   <title>Archives: 2014/8 | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Timon Wong's Blog">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Timon Wong&#39;s Blog">
 <meta property="og:url" content="http://theo.im/blog/archives/2014/08/index.html">
-<meta property="og:site_name" content="Timon Wong's Blog">
-<meta property="og:description">
+<meta property="og:site_name" content="Timon Wong&#39;s Blog">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Timon Wong's Blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Timon Wong&#39;s Blog">
 <meta name="twitter:creator" content="@timonwong">
   
     <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
@@ -99,8 +96,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>字符集向来都是一个大问题，即使是 Python 3.x，也最多只是能说感谢 <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> 字符集，字符串的存取现在没有问题了。</p>
-<p>Unicode 字符集的常见<strong>编码</strong>有 <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a>、<a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a>、<a href="http://en.wikipedia.org/wiki/UTF-32">UTF-32</a> 等常见格式，另外，<a href="http://en.wikipedia.org/wiki/GB_18030">GB18030</a> 也可以算其中一种（ GB18030，与 UTF-8 类似，是一种变长编码格式，最大的优势就是兼容 <a href="http://en.wikipedia.org/wiki/GBK">GBK</a>/<a href="http://en.wikipedia.org/wiki/GB2312">GB2312</a> ）</p>
+        <p>字符集向来都是一个大问题，即使是 Python 3.x，也最多只是能说感谢 <a href="http://en.wikipedia.org/wiki/Unicode" target="_blank" rel="external">Unicode</a> 字符集，字符串的存取现在没有问题了。</p>
+<p>Unicode 字符集的常见<strong>编码</strong>有 <a href="http://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="external">UTF-8</a>、<a href="http://en.wikipedia.org/wiki/UTF-16" target="_blank" rel="external">UTF-16</a>、<a href="http://en.wikipedia.org/wiki/UTF-32" target="_blank" rel="external">UTF-32</a> 等常见格式，另外，<a href="http://en.wikipedia.org/wiki/GB_18030" target="_blank" rel="external">GB18030</a> 也可以算其中一种（ GB18030，与 UTF-8 类似，是一种变长编码格式，最大的优势就是兼容 <a href="http://en.wikipedia.org/wiki/GBK" target="_blank" rel="external">GBK</a>/<a href="http://en.wikipedia.org/wiki/GB2312" target="_blank" rel="external">GB2312</a> ）</p>
 <p>但是 Unicode 就能无痛的解决所有问题吗？答案是否定的。</p>
         
           <p class="article-more-link">
@@ -110,7 +107,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="ciopvz7g40014yesmz6bk9ypd" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="cj8s8oamw0013vmsmxggfn8sw" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -153,9 +150,9 @@
         <h2 id="开始之前"><a href="#开始之前" class="headerlink" title="开始之前"></a>开始之前</h2><p>首先，这是一篇菜B写的文章，可能会有理解错误的地方，发现错误请斧正，谢谢。</p>
 <p>为了治疗我的懒癌早期，我一次就不写得太多了，这个系列想写很久了，每次都是开了个头就没有再写。这次争取把写完，弄成一个系列。</p>
 <h2 id="此-nil-不等彼-nil"><a href="#此-nil-不等彼-nil" class="headerlink" title="此 nil 不等彼 nil"></a>此 nil 不等彼 nil</h2><p><em>先声明，这个标题有标题党的嫌疑。</em></p>
-<p>Go 的类型系统是比较奇葩的，<code>nil</code> 的含义跟其它语言有些差别，这里举个例子（可以直接进入 <a href="http://play.golang.org/p/ezFhXX0dnB">http://play.golang.org/p/ezFhXX0dnB</a> 运行查看结果）：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> a *A = <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">var</span> ai <span class="keyword">interface</span>&#123;&#125; = a</span><br><span class="line">    <span class="keyword">var</span> ei <span class="keyword">interface</span>&#123;&#125; = <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"ai == nil: %v\n"</span>, ai == <span class="literal">nil</span>)</span><br><span class="line">    fmt.Printf(<span class="string">"ai == ei: %v\n"</span>, ai == ei)</span><br><span class="line">    fmt.Printf(<span class="string">"ei == a: %v\n"</span>, a == ei)</span><br><span class="line">    fmt.Printf(<span class="string">"ei == nil: %v\n"</span>, ei == <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -&gt; 输出</span></span><br><span class="line"><span class="comment">// ai == nil: false</span></span><br><span class="line"><span class="comment">// ai == ei: false</span></span><br><span class="line"><span class="comment">// ei == a: false</span></span><br><span class="line"><span class="comment">// ei == nil: true</span></span><br></pre></td></tr></table></figure>
-<p>这里 <code>ai != nil</code>，对于没有用过 Go 的人来说比较费解，对我来说，这个算得上一门语言设计有歧义的地方（Golang FAQ 有对于此问题的描述，可以参考一下：<a href="http://golang.org/doc/faq#nil_error">http://golang.org/doc/faq#nil_error</a>）。</p>
+<p>Go 的类型系统是比较奇葩的，<code>nil</code> 的含义跟其它语言有些差别，这里举个例子（可以直接进入 <a href="http://play.golang.org/p/ezFhXX0dnB" target="_blank" rel="external">http://play.golang.org/p/ezFhXX0dnB</a> 运行查看结果）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">var</span> a *A = <span class="literal">nil</span></div><div class="line">    <span class="keyword">var</span> ai <span class="keyword">interface</span>&#123;&#125; = a</div><div class="line">    <span class="keyword">var</span> ei <span class="keyword">interface</span>&#123;&#125; = <span class="literal">nil</span></div><div class="line"></div><div class="line">    fmt.Printf(<span class="string">"ai == nil: %v\n"</span>, ai == <span class="literal">nil</span>)</div><div class="line">    fmt.Printf(<span class="string">"ai == ei: %v\n"</span>, ai == ei)</div><div class="line">    fmt.Printf(<span class="string">"ei == a: %v\n"</span>, a == ei)</div><div class="line">    fmt.Printf(<span class="string">"ei == nil: %v\n"</span>, ei == <span class="literal">nil</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// -&gt; 输出</span></div><div class="line"><span class="comment">// ai == nil: false</span></div><div class="line"><span class="comment">// ai == ei: false</span></div><div class="line"><span class="comment">// ei == a: false</span></div><div class="line"><span class="comment">// ei == nil: true</span></div></pre></td></tr></table></figure>
+<p>这里 <code>ai != nil</code>，对于没有用过 Go 的人来说比较费解，对我来说，这个算得上一门语言设计有歧义的地方（Golang FAQ 有对于此问题的描述，可以参考一下：<a href="http://golang.org/doc/faq#nil_error" target="_blank" rel="external">http://golang.org/doc/faq#nil_error</a>）。</p>
 <p>简单的说就是 nil 代表 “zero value”（空值），<strong>对于不同类型，它具体所代表的值不同</strong>。比如上面的 <code>a</code> 为“<code>*A</code> 类型的空值”，而 <code>ai</code> 为“<code>interface{}</code> 类型的空值”。造成理解失误的最大问题在于，<code>struct pointer</code> 到 <code>interface</code> 有隐式转换（<code>var ai interface{] = a</code>，这里有个隐式转换），至于为什么对于 Go 这种在其它转换方面要求严格，而对于 <code>interface</code> 要除外呢，for convenience 吧，呵呵……</p>
 <p>碰到了这个坑，我就开始好奇了，Go 的类型系统到底是什么样的？</p>
         
@@ -166,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="ciopvz7g20011yesmkf8qoxvd" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="cj8s8oamu000xvmsmczqxngg5" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/08/Golang-memory-part-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -217,12 +214,12 @@
 <p>虽然使用 <code>taskkill /IM igfxHK.exe</code> 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 <code>igfxHK.exe</code>
 占有这些全局快捷键。</p>
 <p>注册表文件如下，保存为一个 <code>.reg</code> 文件最后双击运行并导入到注册表即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]</span><br><span class="line">&quot;3101&quot;=-</span><br><span class="line">&quot;3105&quot;=-</span><br><span class="line">&quot;3121&quot;=-</span><br><span class="line">&quot;9530&quot;=-</span><br><span class="line">&quot;3106&quot;=-</span><br><span class="line">&quot;3107&quot;=-</span><br><span class="line">&quot;3108&quot;=-</span><br><span class="line">&quot;3109&quot;=-</span><br><span class="line">&quot;3110&quot;=-</span><br><span class="line">&quot;4528&quot;=-</span><br><span class="line">&quot;10&quot;=-</span><br><span class="line">&quot;11&quot;=-</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Windows Registry Editor Version 5.00</div><div class="line"></div><div class="line">[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]</div><div class="line">&quot;3101&quot;=-</div><div class="line">&quot;3105&quot;=-</div><div class="line">&quot;3121&quot;=-</div><div class="line">&quot;9530&quot;=-</div><div class="line">&quot;3106&quot;=-</div><div class="line">&quot;3107&quot;=-</div><div class="line">&quot;3108&quot;=-</div><div class="line">&quot;3109&quot;=-</div><div class="line">&quot;3110&quot;=-</div><div class="line">&quot;4528&quot;=-</div><div class="line">&quot;10&quot;=-</div><div class="line">&quot;11&quot;=-</div></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="ciopvz7g0000yyesmyo0tjtl1" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" data-id="cj8s8oamv0010vmsmx1lr8rey" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -252,7 +249,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
+      <a class="article-title" href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &#34;supR3HardenedWinReSpawn&#34;</a>
     </h1>
   
 
@@ -262,7 +259,7 @@
       
         <p>今天在公司机器上装了 VirtualBox (版本 4.3.14) 和 Vagrant, 在运行 <code>vagrant up</code> 后总是提示虚拟机不能启动的错误。打开 VirtualBox 然后手动启动虚拟机发现如下错误框：</p>
 <p><img src="http://theo-im.qiniudn.com/images/virtualbox-error.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---------------------------</span><br><span class="line">VirtualBox - Error In supR3HardenedWinReSpawn</span><br><span class="line">---------------------------</span><br><span class="line">Error relaunching VirtualBox VM process: 5</span><br><span class="line">Command line: &apos;81954AF5-4D2F-31EB-A142-B7AF187A1C41-suplib-2ndchild --comment Work_default_1407215688716_8404 --startvm 93cdc421-ae20-49d6-8ca4-6c5570f809cd --no-startvm-errormsgbox&apos; (rc=-104)/&gt;</span><br><span class="line">---------------------------</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">---------------------------</div><div class="line">VirtualBox - Error In supR3HardenedWinReSpawn</div><div class="line">---------------------------</div><div class="line">Error relaunching VirtualBox VM process: 5</div><div class="line">Command line: &apos;81954AF5-4D2F-31EB-A142-B7AF187A1C41-suplib-2ndchild --comment Work_default_1407215688716_8404 --startvm 93cdc421-ae20-49d6-8ca4-6c5570f809cd --no-startvm-errormsgbox&apos; (rc=-104)/&gt;</div><div class="line">---------------------------</div></pre></td></tr></table></figure>
 <p>原因:</p>
 <ul>
 <li>与 Symantec Endpoint Protection 冲突</li>
@@ -277,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="ciopvz7fy000uyesmb79z8mtt" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/" data-id="cj8s8oamt000tvmsmd0ao6mrj" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -333,7 +330,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/">AWS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -342,7 +339,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/aws/" style="font-size: 10px;">AWS</a> <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -351,7 +348,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -361,6 +358,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2017/10/14/suspicious-502-error-from-elb/">解决 AWS ELB 偶发的 502 Bad Gateway 错误</a>
+          </li>
         
           <li>
             <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
@@ -378,10 +379,6 @@
             <a href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/">删除 Intel HD Graphics 显卡工具的全局快捷键</a>
           </li>
         
-          <li>
-            <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -394,7 +391,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2016 Timon Wong<br>
+      &copy; 2017 Timon Wong<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

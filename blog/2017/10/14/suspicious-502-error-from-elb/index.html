@@ -3,14 +3,21 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>Tag: Hardware | Timon Wong&#39;s Blog</title>
+  <title>解决 AWS ELB 偶发的 502 Bad Gateway 错误 | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Timon Wong&#39;s Blog">
-<meta property="og:url" content="http://theo.im/tags/hardware/index.html">
+  <meta name="description" content="问题描述在使用了 Prometheus 做了 HTTP 协议的监控之后，blackbox_exporter 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。 HTTP 数据流向如下： 1[Client] --- [ELB] --- [">
+<meta name="keywords" content="AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决 AWS ELB 偶发的 502 Bad Gateway 错误">
+<meta property="og:url" content="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/index.html">
 <meta property="og:site_name" content="Timon Wong&#39;s Blog">
+<meta property="og:description" content="问题描述在使用了 Prometheus 做了 HTTP 协议的监控之后，blackbox_exporter 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。 HTTP 数据流向如下： 1[Client] --- [ELB] --- [">
+<meta property="og:image" content="http://theo-im.qiniudn.com/images/2017-10-14-tcpdump.png">
+<meta property="og:updated_time" content="2017-10-15T04:15:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Timon Wong&#39;s Blog">
+<meta name="twitter:title" content="解决 AWS ELB 偶发的 502 Bad Gateway 错误">
+<meta name="twitter:description" content="问题描述在使用了 Prometheus 做了 HTTP 协议的监控之后，blackbox_exporter 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。 HTTP 数据流向如下： 1[Client] --- [ELB] --- [">
+<meta name="twitter:image" content="http://theo-im.qiniudn.com/images/2017-10-14-tcpdump.png">
 <meta name="twitter:creator" content="@timonwong">
   
     <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
@@ -68,12 +75,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-calculating-gradient-form-two-axis-inclinometer" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-suspicious-502-error-from-elb" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/2012/12/29/calculating-gradient-form-two-axis-inclinometer/" class="article-date">
-  <time datetime="2012-12-29T11:30:00.000Z" itemprop="datePublished">Dec 29 2012</time>
+    <a href="/blog/2017/10/14/suspicious-502-error-from-elb/" class="article-date">
+  <time datetime="2017-10-14T15:32:11.000Z" itemprop="datePublished">Oct 14 2017</time>
 </a>
     
   <div class="article-category">
@@ -87,8 +92,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2012/12/29/calculating-gradient-form-two-axis-inclinometer/">双轴倾角传感器计算坡度</a>
+    <h1 class="article-title" itemprop="name">
+      解决 AWS ELB 偶发的 502 Bad Gateway 错误
     </h1>
   
 
@@ -96,41 +101,64 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>令 $x$ 轴, $y$ 轴上的转角分别为 $\alpha, \beta$, 平面坡度为 $\theta$, 则:</p>
-<p>$$
-\begin{align}
-  \theta = \arccos({
-    \frac
-      {1}
-      {\sqrt{
-        \tan^2{\alpha} + \tan^2{\beta} + 1
-      }}
-  })
-\end{align}
-$$</p>
-<p>最近拿了个双轴倾角传感器玩玩，把公式和示例代码记下来备忘。</p>
-<p>推导过程就省略了，下面是C语言描述的示例代码，其中 <code>calc_gradient_from_pitch_roll()</code> 函数的参数和返回值都是<strong>弧度</strong>。</p>
-<figure class="highlight c"><figcaption><span>坡度计算示例代码</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> MATH_PI     (3.14159f)</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> DEGREES_TO_RADIANS(angle)       ((angle) * ((MATH_PI) / 180.0f))</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> RADIANS_TO_DEGREES(radians)     ((radians) * (180.0f / (MATH_PI)))</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">float</span> <span class="title">calc_gradient_from_pitch_roll</span><span class="params">(<span class="keyword">float</span> pitch, <span class="keyword">float</span> roll)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">float</span> tan_pitch = <span class="built_in">tan</span>(pitch);</div><div class="line">    <span class="keyword">float</span> tan_roll  = <span class="built_in">tan</span>(roll);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="built_in">acos</span>(<span class="number">1.0f</span> / <span class="built_in">sqrt</span>(tan_pitch * tan_pitch + tan_roll * tan_roll + <span class="number">1.0f</span>));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Test</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> *argv[])</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="keyword">float</span> deg_pitch, deg_roll;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"(in degress) pitch,roll = "</span>);</div><div class="line">        <span class="keyword">int</span> ret = <span class="built_in">scanf</span>(<span class="string">"%f,%f"</span>, &amp;deg_pitch, &amp;deg_roll);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (ret == <span class="number">2</span>) &#123;</div><div class="line">            <span class="keyword">float</span> pitch    = DEGREES_TO_RADIANS(deg_pitch);</div><div class="line">            <span class="keyword">float</span> roll     = DEGREES_TO_RADIANS(deg_roll);</div><div class="line">            <span class="keyword">float</span> gradient = calc_gradient_from_pitch_roll(pitch, roll);</div><div class="line"></div><div class="line">            <span class="built_in">printf</span>(<span class="string">"(in degress) gradient = %f\n"</span>, RADIANS_TO_DEGREES(gradient));</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ret == EOF) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Print error message and clear the input buffer</span></div><div class="line">            <span class="built_in">printf</span>(<span class="string">"Illegal input\n"</span>);</div><div class="line">            setbuf(<span class="built_in">stdin</span>, <span class="literal">NULL</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在使用了 <a href="https://github.com/prometheus/blackbox_exporter" target="_blank" rel="external">Prometheus</a> 做了 HTTP 协议的监控之后，<a href="https://github.com/prometheus/blackbox_exporter" target="_blank" rel="external">blackbox_exporter</a> 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。</p>
+<p>HTTP 数据流向如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[Client] --- [ELB] --- [nginx] --- [App Servers]</div></pre></td></tr></table></figure>
+<h2 id="排查问题"><a href="#排查问题" class="headerlink" title="排查问题"></a>排查问题</h2><a id="more"></a>
+<p>最开始是怀疑是后端问题，但是查阅了 nginx 和 App servers 的日志，没有任何结果，只是在 ELB 日志里面找到了 502 Bad Gateway 的错误信息。无奈之下甚至怀疑 nginx 所在 EC2 instance 有问题，因此求助了 AWS 技术支持。根据建议，在 nginx 这端做了 tcpdump 抓包，最后终于在 AWS 技术支持的帮助下，定位并解决了问题 🎉。</p>
+<p>先补充一个知识：如果后端支持的话，ELB 会使用保持连接（HTTP persistent/keep-alive connections）。来看看这一个保持连接的 TCP stream：</p>
+<p><img src="http://theo-im.qiniudn.com/images/2017-10-14-tcpdump.png" alt=""></p>
+<p>其中，｀10.100.2.186｀ 是 ELB 内部 IP，｀10.100.250.22｀是 nginx 服务器内部 IP。这样，可以看到：</p>
+<ul>
+<li>在 76.69 秒时候，连接被创建；</li>
+<li>在 181.69 秒的时候，是最后一次有效请求；</li>
+<li>在 256.69 秒的时候（No.7475），该连接被 nginx 关闭；</li>
+<li>在 256.69 秒的时候，几乎在同时还有一个 HTTP GET 请求（No.7476）；</li>
+<li>由于 nginx 已经关闭连接了，上面的这个请求当然会收到 TCP RST，ELB 无法访问后端服务器，就会返回 502 Bad Gateway 了。</li>
+</ul>
+<p>刚刚过了 75 秒（256.69 - 181.69）连接就被 nginx 关闭了，是不是很眼熟：nginx <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout" target="_blank" rel="external">keepalive_timeout</a> 参数的默认值，恰好就是 75 秒。</p>
+<p>很明显是遇到了 Keep-Alive timeout race 了，而这个问题其实在 HTTP/1.1 下，是不好解决的，只有靠微调降低出现的概率；禁用 Keep-Alive；或者靠 Client 上层处理。</p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><p>由于 ELB 并不受我们的控制，所以考虑对后端进行微调。根据不同的场景，可以：</p>
+<ul>
+<li>增加后端服务器持久连接的保持时间，比如 nginx 增加 <code>keepalive_timeout</code> 参数</li>
+<li>禁用 HTTP 持久连接）</li>
+</ul>
+<p>根据<a href="https://blog.percy.io/tuning-nginx-behind-google-cloud-platform-http-s-load-balancer-305982ddb340" target="_blank" rel="external">这篇解决 Google Cloud Platform 负载均衡器类似问题的文章</a>，说明我不是一个人😂。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2012/12/29/calculating-gradient-form-two-axis-inclinometer/" data-id="cj8s8oamg0005vmsm8hht6u4y" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/" data-id="cj8s8oamy0018vmsmjctnpe59" class="article-share-link">Share</a>
       
-        <a href="http://theo.im/blog/2012/12/29/calculating-gradient-form-two-axis-inclinometer/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hardware/">Hardware</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aws/">AWS</a></li></ul>
 
     </footer>
   </div>
   
-</article>
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">试用最新的 Docker for Mac Beta</div>
+    </a>
+  
+</nav>
 
 
   
+</article>
 
 
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
 </section>
         
           <aside id="sidebar">
@@ -264,11 +292,13 @@ $$</p>
 <script type="text/javascript">
   var disqus_shortname = 'theoim';
   
+  var disqus_url = 'http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//go.disqus.com/count.js';
+    dsq.src = '//go.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
@@ -300,23 +330,6 @@ ga('send', 'pageview');
 
 
 
-  </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"processEscapes":"true,","inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"]}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

@@ -5,31 +5,17 @@
   
   <title>RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题 | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ
-没有收到，Consumer 那里会认为消息已丢失。
-NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。
-分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。
-那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
-pika">
+  <meta name="description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ 没有收到，Consumer 那里会认为消息已丢失。 NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。 分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。 那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了 pika">
+<meta name="keywords" content="Python,RabbitMQ,Pika">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题">
 <meta property="og:url" content="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/index.html">
-<meta property="og:site_name" content="Timon Wong's Blog">
-<meta property="og:description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ
-没有收到，Consumer 那里会认为消息已丢失。
-NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。
-分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。
-那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
-pika">
+<meta property="og:site_name" content="Timon Wong&#39;s Blog">
+<meta property="og:description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ 没有收到，Consumer 那里会认为消息已丢失。 NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。 分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。 那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了 pika">
 <meta property="og:updated_time" content="2016-05-22T13:48:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题">
-<meta name="twitter:description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ
-没有收到，Consumer 那里会认为消息已丢失。
-NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。
-分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。
-那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
-pika">
+<meta name="twitter:description" content="问题描述这个问题存在很久了，现象就是使用 Pika 库的客户端在发送大尺寸消息后，RabbitMQ 没有收到，Consumer 那里会认为消息已丢失。 NOTE: 即使在本文写时的最新版(v0.9.13)依然存在这个问题。 分析因为网络状态很好，所以没有考虑网络的错误，直接考虑Pika库的问题。 那么第一步就是把 Pika 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了 pika">
 <meta name="twitter:creator" content="@timonwong">
   
     <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
@@ -119,7 +105,7 @@ pika">
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>因为网络状态很好，所以没有考虑网络的错误，直接考虑<a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a>库的问题。</p>
 <p>那么第一步就是把 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
 <code>pika/adapters/base_connection.py</code> 这个文件，来看看里面的内容：</p>
-<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/0.9.13/pika/adapters/base_connection.py#L329" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></span><br><span class="line">    total_written = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> self.outbound_buffer:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            bytes_written = self.socket.send(self.outbound_buffer.popleft())</span><br><span class="line">        <span class="keyword">except</span> socket.timeout:</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">except</span> socket.error, error:</span><br><span class="line">            <span class="keyword">return</span> self._handle_error(error)</span><br><span class="line">        total_written += bytes_written</span><br><span class="line">    <span class="keyword">return</span> total_written</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/0.9.13/pika/adapters/base_connection.py#L329" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    total_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            bytes_written = self.socket.send(self.outbound_buffer.popleft())</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error, error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">        total_written += bytes_written</div><div class="line">    <span class="keyword">return</span> total_written</div></pre></td></tr></table></figure>
 <p>看出问题了吗？</p>
 <p>来看看<code>socket.send</code>的文档吧：</p>
 <blockquote><p>Send data to the socket. The socket must be connected to a remote socket. The optional flags argument has the same meaning as for recv() above. Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this concept, consult the Socket Programming HOWTO.</p>
@@ -128,7 +114,7 @@ pika">
 <code>self.outbound_buffer.popleft()</code>）。</p>
 <p>由于 <code>socket.send</code> 可能没有将数据发送完成就返回了，造成了消息丢失的情况。</p>
 <p>本来想自己修的，看了一眼 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的 <code>master</code> 分支，已经修正了（一次保证将一个帧(Frame)发送完成）：</p>
-<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/master/pika/adapters/base_connection.py#L354" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></span><br><span class="line">    bytes_written = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> self.outbound_buffer:</span><br><span class="line">        frame = self.outbound_buffer.popleft()</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.socket.sendall(frame)</span><br><span class="line">            bytes_written = len(frame)</span><br><span class="line">        <span class="keyword">except</span> socket.timeout:</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">except</span> socket.error <span class="keyword">as</span> error:</span><br><span class="line">            <span class="keyword">return</span> self._handle_error(error)</span><br><span class="line">    <span class="keyword">return</span> bytes_written</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/master/pika/adapters/base_connection.py#L354" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    bytes_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        frame = self.outbound_buffer.popleft()</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            self.socket.sendall(frame)</div><div class="line">            bytes_written = len(frame)</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error <span class="keyword">as</span> error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">    <span class="keyword">return</span> bytes_written</div></pre></td></tr></table></figure>
 <p>呵呵……</p>
 <h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ol>
 <li>自行打补丁；</li>
@@ -141,7 +127,7 @@ pika">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/" data-id="ciopvz7fo000jyesm1sdrp9yf" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/" data-id="cj8s8oamo000ivmsma18nd0ro" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -221,7 +207,7 @@ pika">
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/">AWS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -230,7 +216,7 @@ pika">
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/aws/" style="font-size: 10px;">AWS</a> <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -239,7 +225,7 @@ pika">
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -249,6 +235,10 @@ pika">
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2017/10/14/suspicious-502-error-from-elb/">解决 AWS ELB 偶发的 502 Bad Gateway 错误</a>
+          </li>
         
           <li>
             <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
@@ -266,10 +256,6 @@ pika">
             <a href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/">删除 Intel HD Graphics 显卡工具的全局快捷键</a>
           </li>
         
-          <li>
-            <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -282,7 +268,7 @@ pika">
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2016 Timon Wong<br>
+      &copy; 2017 Timon Wong<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

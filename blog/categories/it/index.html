@@ -5,15 +5,12 @@
   
   <title>Category: IT | Timon Wong&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Timon Wong's Blog">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Timon Wong&#39;s Blog">
 <meta property="og:url" content="http://theo.im/blog/categories/it/index.html">
-<meta property="og:site_name" content="Timon Wong's Blog">
-<meta property="og:description">
+<meta property="og:site_name" content="Timon Wong&#39;s Blog">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Timon Wong's Blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Timon Wong&#39;s Blog">
 <meta name="twitter:creator" content="@timonwong">
   
     <link rel="alternate" href="/atom.xml" title="Timon Wong&#39;s Blog" type="application/atom+xml">
@@ -73,6 +70,58 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-suspicious-502-error-from-elb" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2017/10/14/suspicious-502-error-from-elb/" class="article-date">
+  <time datetime="2017-10-14T15:32:11.000Z" itemprop="datePublished">Oct 14 2017</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/it/">IT</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2017/10/14/suspicious-502-error-from-elb/">解决 AWS ELB 偶发的 502 Bad Gateway 错误</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在使用了 <a href="https://github.com/prometheus/blackbox_exporter" target="_blank" rel="external">Prometheus</a> 做了 HTTP 协议的监控之后，<a href="https://github.com/prometheus/blackbox_exporter" target="_blank" rel="external">blackbox_exporter</a> 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。</p>
+<p>HTTP 数据流向如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[Client] --- [ELB] --- [nginx] --- [App Servers]</div></pre></td></tr></table></figure>
+<h2 id="排查问题"><a href="#排查问题" class="headerlink" title="排查问题"></a>排查问题</h2>
+        
+          <p class="article-more-link">
+            <a href="/blog/2017/10/14/suspicious-502-error-from-elb/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/" data-id="cj8s8oamy0018vmsmjctnpe59" class="article-share-link">Share</a>
+      
+        <a href="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aws/">AWS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-evaluating-new-docker-for-mac-beta" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" class="article-date">
@@ -105,15 +154,15 @@
 <h2 id="使用-Docker-Hub-Registry-Mirror"><a href="#使用-Docker-Hub-Registry-Mirror" class="headerlink" title="使用 Docker Hub Registry Mirror"></a>使用 Docker Hub Registry Mirror</h2><p>由于众所周知的原因，在国内访问 Docker Hub 的速度相当缓慢，因此需要设置一个 Docker Registry Mirror 来加速，这里使用 <a href="https://servers.ustclug.org/2015/05/new-docker-hub-registry-mirror/" target="_blank" rel="external">USTC 的 Docker Hub Mirror</a>。</p>
 <p>就如同之前所说，<a href="http://alpinelinux.org/" target="_blank" rel="external">Alpine Linux</a> 发行版与一般发行版有巨大区别，因此调整 Docker Daemon 的启动参数也不大一样😂</p>
 <h3 id="Quick-Way"><a href="#Quick-Way" class="headerlink" title="Quick Way"></a>Quick Way</h3><p><strong>NOTE:</strong> 安装了 <code>jq</code> 命令行工具（可以通过 <code>brew install jq</code> 安装），可以直接执行一行命令行搞定，否则请参阅「Slow Way」一节：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon | jq -cM <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pinata get daemon | jq -cM <span class="string">'."registry-mirrors" = ["https://docker.mirrors.ustc.edu.cn"]'</span> | pinata <span class="built_in">set</span> daemon -</div></pre></td></tr></table></figure>
 <h3 id="Slow-Way"><a href="#Slow-Way" class="headerlink" title="Slow Way"></a>Slow Way</h3><h4 id="1-导出当前的设置"><a href="#1-导出当前的设置" class="headerlink" title="1. 导出当前的设置"></a>1. 导出当前的设置</h4><p>运行以下命令，将当前设置保存到 <code>docker-config.json</code> 文件中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pinata get daemon &gt; docker-config.json</span><br><span class="line"><span class="comment">## &gt;&gt; &#123;"storage-driver":"aufs","debug":true&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pinata get daemon &gt; docker-config.json</div><div class="line"><span class="comment">## &gt;&gt; &#123;"storage-driver":"aufs","debug":true&#125;</span></div></pre></td></tr></table></figure>
 <h4 id="2-使用文本编辑器编辑设置"><a href="#2-使用文本编辑器编辑设置" class="headerlink" title="2. 使用文本编辑器编辑设置"></a>2. 使用文本编辑器编辑设置</h4><p>使用任何一种文本编辑器，打开 <code>docker-config.json</code> 并按照 <code>JSON</code> 格式编辑为以下内容，然后保存并退出：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"storage-driver"</span>:<span class="string">"aufs"</span>,<span class="attr">"debug"</span>:<span class="literal">true</span>,<span class="attr">"registry-mirrors"</span>:[<span class="string">"https://docker.mirrors.ustc.edu.cn"</span>]&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="attr">"storage-driver"</span>:<span class="string">"aufs"</span>,<span class="attr">"debug"</span>:<span class="literal">true</span>,<span class="attr">"registry-mirrors"</span>:[<span class="string">"https://docker.mirrors.ustc.edu.cn"</span>]&#125;</div></pre></td></tr></table></figure>
 <h4 id="3-加载最新设置"><a href="#3-加载最新设置" class="headerlink" title="3. 加载最新设置"></a>3. 加载最新设置</h4><p>最后，加载 <code>docker-config.json</code> 中的设置就可以了：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pinata set daemon @docker-config.json</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pinata set daemon @docker-config.json</div></pre></td></tr></table></figure>
 <h2 id="获取-Docker-Guest-的-IP-地址"><a href="#获取-Docker-Guest-的-IP-地址" class="headerlink" title="获取 Docker Guest 的 IP 地址"></a>获取 Docker Guest 的 IP 地址</h2><p>有时候，我们需要得到 Docker Guest 的 IP 地址，其实不大有比较快捷的方法，比如，先运行 <code>pinata get network</code>，居然返回这个？？WTF？！</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnet</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hostnet</div></pre></td></tr></table></figure>
 <p>然后只有运行 <code>pinata list</code> 了：</p>
 <pre><code>These are advanced configuration settings to customise Docker.app on MacOSX.
 You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
@@ -170,7 +219,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="ciopvz7g90016yesmb44nm3o4" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/" data-id="cj8s8oamx0015vmsmzl1k9cxz" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2016/05/22/evaluating-new-docker-for-mac-beta/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -210,8 +259,8 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>字符集向来都是一个大问题，即使是 Python 3.x，也最多只是能说感谢 <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> 字符集，字符串的存取现在没有问题了。</p>
-<p>Unicode 字符集的常见<strong>编码</strong>有 <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a>、<a href="http://en.wikipedia.org/wiki/UTF-16">UTF-16</a>、<a href="http://en.wikipedia.org/wiki/UTF-32">UTF-32</a> 等常见格式，另外，<a href="http://en.wikipedia.org/wiki/GB_18030">GB18030</a> 也可以算其中一种（ GB18030，与 UTF-8 类似，是一种变长编码格式，最大的优势就是兼容 <a href="http://en.wikipedia.org/wiki/GBK">GBK</a>/<a href="http://en.wikipedia.org/wiki/GB2312">GB2312</a> ）</p>
+        <p>字符集向来都是一个大问题，即使是 Python 3.x，也最多只是能说感谢 <a href="http://en.wikipedia.org/wiki/Unicode" target="_blank" rel="external">Unicode</a> 字符集，字符串的存取现在没有问题了。</p>
+<p>Unicode 字符集的常见<strong>编码</strong>有 <a href="http://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="external">UTF-8</a>、<a href="http://en.wikipedia.org/wiki/UTF-16" target="_blank" rel="external">UTF-16</a>、<a href="http://en.wikipedia.org/wiki/UTF-32" target="_blank" rel="external">UTF-32</a> 等常见格式，另外，<a href="http://en.wikipedia.org/wiki/GB_18030" target="_blank" rel="external">GB18030</a> 也可以算其中一种（ GB18030，与 UTF-8 类似，是一种变长编码格式，最大的优势就是兼容 <a href="http://en.wikipedia.org/wiki/GBK" target="_blank" rel="external">GBK</a>/<a href="http://en.wikipedia.org/wiki/GB2312" target="_blank" rel="external">GB2312</a> ）</p>
 <p>但是 Unicode 就能无痛的解决所有问题吗？答案是否定的。</p>
         
           <p class="article-more-link">
@@ -221,7 +270,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="ciopvz7g40014yesmz6bk9ypd" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/" data-id="cj8s8oamw0013vmsmxggfn8sw" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/13/count-text-element-count-in-python/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -264,9 +313,9 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
         <h2 id="开始之前"><a href="#开始之前" class="headerlink" title="开始之前"></a>开始之前</h2><p>首先，这是一篇菜B写的文章，可能会有理解错误的地方，发现错误请斧正，谢谢。</p>
 <p>为了治疗我的懒癌早期，我一次就不写得太多了，这个系列想写很久了，每次都是开了个头就没有再写。这次争取把写完，弄成一个系列。</p>
 <h2 id="此-nil-不等彼-nil"><a href="#此-nil-不等彼-nil" class="headerlink" title="此 nil 不等彼 nil"></a>此 nil 不等彼 nil</h2><p><em>先声明，这个标题有标题党的嫌疑。</em></p>
-<p>Go 的类型系统是比较奇葩的，<code>nil</code> 的含义跟其它语言有些差别，这里举个例子（可以直接进入 <a href="http://play.golang.org/p/ezFhXX0dnB">http://play.golang.org/p/ezFhXX0dnB</a> 运行查看结果）：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> a *A = <span class="literal">nil</span></span><br><span class="line">    <span class="keyword">var</span> ai <span class="keyword">interface</span>&#123;&#125; = a</span><br><span class="line">    <span class="keyword">var</span> ei <span class="keyword">interface</span>&#123;&#125; = <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"ai == nil: %v\n"</span>, ai == <span class="literal">nil</span>)</span><br><span class="line">    fmt.Printf(<span class="string">"ai == ei: %v\n"</span>, ai == ei)</span><br><span class="line">    fmt.Printf(<span class="string">"ei == a: %v\n"</span>, a == ei)</span><br><span class="line">    fmt.Printf(<span class="string">"ei == nil: %v\n"</span>, ei == <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -&gt; 输出</span></span><br><span class="line"><span class="comment">// ai == nil: false</span></span><br><span class="line"><span class="comment">// ai == ei: false</span></span><br><span class="line"><span class="comment">// ei == a: false</span></span><br><span class="line"><span class="comment">// ei == nil: true</span></span><br></pre></td></tr></table></figure>
-<p>这里 <code>ai != nil</code>，对于没有用过 Go 的人来说比较费解，对我来说，这个算得上一门语言设计有歧义的地方（Golang FAQ 有对于此问题的描述，可以参考一下：<a href="http://golang.org/doc/faq#nil_error">http://golang.org/doc/faq#nil_error</a>）。</p>
+<p>Go 的类型系统是比较奇葩的，<code>nil</code> 的含义跟其它语言有些差别，这里举个例子（可以直接进入 <a href="http://play.golang.org/p/ezFhXX0dnB" target="_blank" rel="external">http://play.golang.org/p/ezFhXX0dnB</a> 运行查看结果）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">var</span> a *A = <span class="literal">nil</span></div><div class="line">    <span class="keyword">var</span> ai <span class="keyword">interface</span>&#123;&#125; = a</div><div class="line">    <span class="keyword">var</span> ei <span class="keyword">interface</span>&#123;&#125; = <span class="literal">nil</span></div><div class="line"></div><div class="line">    fmt.Printf(<span class="string">"ai == nil: %v\n"</span>, ai == <span class="literal">nil</span>)</div><div class="line">    fmt.Printf(<span class="string">"ai == ei: %v\n"</span>, ai == ei)</div><div class="line">    fmt.Printf(<span class="string">"ei == a: %v\n"</span>, a == ei)</div><div class="line">    fmt.Printf(<span class="string">"ei == nil: %v\n"</span>, ei == <span class="literal">nil</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// -&gt; 输出</span></div><div class="line"><span class="comment">// ai == nil: false</span></div><div class="line"><span class="comment">// ai == ei: false</span></div><div class="line"><span class="comment">// ei == a: false</span></div><div class="line"><span class="comment">// ei == nil: true</span></div></pre></td></tr></table></figure>
+<p>这里 <code>ai != nil</code>，对于没有用过 Go 的人来说比较费解，对我来说，这个算得上一门语言设计有歧义的地方（Golang FAQ 有对于此问题的描述，可以参考一下：<a href="http://golang.org/doc/faq#nil_error" target="_blank" rel="external">http://golang.org/doc/faq#nil_error</a>）。</p>
 <p>简单的说就是 nil 代表 “zero value”（空值），<strong>对于不同类型，它具体所代表的值不同</strong>。比如上面的 <code>a</code> 为“<code>*A</code> 类型的空值”，而 <code>ai</code> 为“<code>interface{}</code> 类型的空值”。造成理解失误的最大问题在于，<code>struct pointer</code> 到 <code>interface</code> 有隐式转换（<code>var ai interface{] = a</code>，这里有个隐式转换），至于为什么对于 Go 这种在其它转换方面要求严格，而对于 <code>interface</code> 要除外呢，for convenience 吧，呵呵……</p>
 <p>碰到了这个坑，我就开始好奇了，Go 的类型系统到底是什么样的？</p>
         
@@ -277,7 +326,7 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="ciopvz7g20011yesmkf8qoxvd" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/08/08/Golang-memory-part-1/" data-id="cj8s8oamu000xvmsmczqxngg5" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/08/08/Golang-memory-part-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -317,22 +366,22 @@ You can set them via pinata set &lt;key&gt; &lt;value&gt; &lt;options&gt;.
     
     <div class="article-entry" itemprop="articleBody">
       
-        <figure class="highlight go"><figcaption><span>打印 stacktrace</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1</span>&lt;&lt;<span class="number">16</span>)</span><br><span class="line"><span class="comment">// 获取 **所有** goroutine 的 stacktrace</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line"><span class="comment">// 如果需要获取 **当前** goroutine 的 stacktrace, 第二个参数需要为 `false`</span></span><br><span class="line">runtime.Stack(buf, <span class="literal">true</span>)</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(buf))</span><br></pre></td></tr></table></figure>
+        <figure class="highlight go"><figcaption><span>打印 stacktrace</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1</span>&lt;&lt;<span class="number">16</span>)</div><div class="line"><span class="comment">// 获取 **所有** goroutine 的 stacktrace</span></div><div class="line">runtime.Stack(buf, <span class="literal">true</span>)</div><div class="line"><span class="comment">// 如果需要获取 **当前** goroutine 的 stacktrace, 第二个参数需要为 `false`</span></div><div class="line">runtime.Stack(buf, <span class="literal">true</span>)</div><div class="line">fmt.Println(<span class="keyword">string</span>(buf))</div></pre></td></tr></table></figure>
 <p>太诡异了，居然要指定 buffer 的大小，用起来不方便。虽然可以给个“足够大” buffer 用来容纳
 stacktrace，但是什么是“足够大”？</p>
 <p>为了确认 <code>runtime.Stack()</code> 函数的 behavior，需要参考一下 Go 输出 stacktrace 的实现代码。该代码是使用 <a href="https://code.google.com/p/go/source/browse/src/cmd/dist/goc2c.c" target="_blank" rel="external">GOC</a> 写成的。</p>
 <blockquote>
 <p>A .goc file is a combination of a limited form of Go with C.</p>
 </blockquote>
-<figure class="highlight go"><figcaption><span>mprof.goc</span><a href="https://code.google.com/p/go/source/browse/src/pkg/runtime/mprof.goc?name=release-branch.go1.3#382" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Stack</span><span class="params">(b Slice, all <span class="keyword">bool</span>)</span> <span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">uintptr</span> pc, sp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Stack pointer</span></span><br><span class="line">    sp = runtime·getcallersp(&amp;b);</span><br><span class="line">    <span class="comment">// Programer pointer</span></span><br><span class="line">    pc = (<span class="keyword">uintptr</span>)runtime·getcallerpc(&amp;b);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果选择输出所有 goroutine 的 traceback, 挂起所有goroutine,</span></span><br><span class="line">    <span class="comment">// 在本函数完成后恢复</span></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        runtime·semacquire(&amp;runtime·worldsema, <span class="literal">false</span>);</span><br><span class="line">        m-&gt;gcing = <span class="number">1</span>;</span><br><span class="line">        runtime·stoptheworld();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(b.<span class="built_in">len</span> == <span class="number">0</span>)</span><br><span class="line">        n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">// 重定向输出缓冲, 打印到 `b` 这个buffer里</span></span><br><span class="line">        g-&gt;writebuf = (<span class="keyword">byte</span>*)b.array;</span><br><span class="line">        <span class="comment">// buffer具有固定大小, 因此会截断</span></span><br><span class="line">        g-&gt;writenbuf = b.<span class="built_in">len</span>;</span><br><span class="line">        <span class="comment">// proc.c: runtime·goroutineheader</span></span><br><span class="line">        runtime·goroutineheader(g);</span><br><span class="line">        <span class="comment">// traceback_$&#123;arch&#125;.c</span></span><br><span class="line">        runtime·traceback(pc, sp, <span class="number">0</span>, g);</span><br><span class="line">        <span class="keyword">if</span>(all)</span><br><span class="line">            runtime·tracebackothers(g);</span><br><span class="line">        n = b.<span class="built_in">len</span> - g-&gt;writenbuf;</span><br><span class="line">        g-&gt;writebuf = <span class="literal">nil</span>;</span><br><span class="line">        g-&gt;writenbuf = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(all) &#123;</span><br><span class="line">        m-&gt;gcing = <span class="number">0</span>;</span><br><span class="line">        runtime·semrelease(&amp;runtime·worldsema);</span><br><span class="line">        runtime·starttheworld();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><figcaption><span>mprof.goc</span><a href="https://code.google.com/p/go/source/browse/src/pkg/runtime/mprof.goc?name" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Stack</span><span class="params">(b Slice, all <span class="keyword">bool</span>)</span> <span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">    <span class="keyword">uintptr</span> pc, sp;</div><div class="line"></div><div class="line">    <span class="comment">// Stack pointer</span></div><div class="line">    sp = runtime·getcallersp(&amp;b);</div><div class="line">    <span class="comment">// Programer pointer</span></div><div class="line">    pc = (<span class="keyword">uintptr</span>)runtime·getcallerpc(&amp;b);</div><div class="line"></div><div class="line">    <span class="comment">// 如果选择输出所有 goroutine 的 traceback, 挂起所有goroutine,</span></div><div class="line">    <span class="comment">// 在本函数完成后恢复</span></div><div class="line">    <span class="keyword">if</span>(all) &#123;</div><div class="line">        runtime·semacquire(&amp;runtime·worldsema, <span class="literal">false</span>);</div><div class="line">        m-&gt;gcing = <span class="number">1</span>;</div><div class="line">        runtime·stoptheworld();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span>(b.<span class="built_in">len</span> == <span class="number">0</span>)</div><div class="line">        n = <span class="number">0</span>;</div><div class="line">    <span class="keyword">else</span>&#123;</div><div class="line">        <span class="comment">// 重定向输出缓冲, 打印到 `b` 这个buffer里</span></div><div class="line">        g-&gt;writebuf = (<span class="keyword">byte</span>*)b.array;</div><div class="line">        <span class="comment">// buffer具有固定大小, 因此会截断</span></div><div class="line">        g-&gt;writenbuf = b.<span class="built_in">len</span>;</div><div class="line">        <span class="comment">// proc.c: runtime·goroutineheader</span></div><div class="line">        runtime·goroutineheader(g);</div><div class="line">        <span class="comment">// traceback_$&#123;arch&#125;.c</span></div><div class="line">        runtime·traceback(pc, sp, <span class="number">0</span>, g);</div><div class="line">        <span class="keyword">if</span>(all)</div><div class="line">            runtime·tracebackothers(g);</div><div class="line">        n = b.<span class="built_in">len</span> - g-&gt;writenbuf;</div><div class="line">        g-&gt;writebuf = <span class="literal">nil</span>;</div><div class="line">        g-&gt;writenbuf = <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span>(all) &#123;</div><div class="line">        m-&gt;gcing = <span class="number">0</span>;</div><div class="line">        runtime·semrelease(&amp;runtime·worldsema);</div><div class="line">        runtime·starttheworld();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>因为打印到buffer会截断过长的结果，因此可以写一个包装函数：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StackTrace</span><span class="params">(all <span class="keyword">bool</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="comment">// Reserve 10K buffer at first</span></span><br><span class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">10240</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        size := runtime.Stack(buf, all)</span><br><span class="line">        <span class="comment">// The size of the buffer may be not enough to hold the stacktrace,</span></span><br><span class="line">        <span class="comment">// so double the buffer size</span></span><br><span class="line">        <span class="keyword">if</span> size == <span class="built_in">len</span>(buf) &#123;</span><br><span class="line">            buf = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="built_in">len</span>(buf)&lt;&lt;<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">string</span>(buf)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">StackTrace</span><span class="params">(all <span class="keyword">bool</span>)</span> <span class="title">string</span></span> &#123;</div><div class="line">    <span class="comment">// Reserve 10K buffer at first</span></div><div class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">10240</span>)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> &#123;</div><div class="line">        size := runtime.Stack(buf, all)</div><div class="line">        <span class="comment">// The size of the buffer may be not enough to hold the stacktrace,</span></div><div class="line">        <span class="comment">// so double the buffer size</span></div><div class="line">        <span class="keyword">if</span> size == <span class="built_in">len</span>(buf) &#123;</div><div class="line">            buf = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="built_in">len</span>(buf)&lt;&lt;<span class="number">1</span>)</div><div class="line">            <span class="keyword">continue</span></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">break</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">string</span>(buf)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>例子可以在这里看到：<a href="http://play.golang.org/p/4ABrCVbH9g" target="_blank" rel="external">Go Playground</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/" data-id="ciopvz7fw000ryesmw727xqsw" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/" data-id="cj8s8oams000qvmsm479s5099" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -346,60 +395,11 @@ stacktrace，但是什么是“足够大”？</p>
 
 
   
-    <article id="post-use-aliyun-mirror-to-boost-up-download-speed" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/" class="article-date">
-  <time datetime="2014-05-20T03:40:29.000Z" itemprop="datePublished">May 20 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/it/">IT</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/">使用阿里云镜像服务器</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近本机访问 <code>163.com</code> 的 <code>CentOS</code> 镜像比较不稳定，体现在 ping 很低，但是 HTTP
-连接很慢，<code>yum</code> 的 <code>fastestmirror</code> 也不太理想，所以一般都禁用之。</p>
-<p>发现阿里云的镜像服务器，立马换了，便秘立刻就通了。</p>
-<h2 id="yum-镜像"><a href="#yum-镜像" class="headerlink" title="yum 镜像"></a>yum 镜像</h2><h3 id="官方源镜像"><a href="#官方源镜像" class="headerlink" title="官方源镜像"></a>官方源镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 禁用 fastestmirror 插件</span></span><br><span class="line">sed -i.backup <span class="string">'s/^enabled=1/enabled=0/'</span> /etc/yum/pluginconf.d/fastestmirror.conf</span><br><span class="line"><span class="comment"># 备份</span></span><br><span class="line">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br><span class="line"><span class="comment"># 使用阿里云镜像</span></span><br><span class="line">wget -O /etc/yum.repos.d/CentOS-Base-aliyun.repo http://mirrors.aliyun.com/repo/Centos-6.repo</span><br></pre></td></tr></table></figure>
-<h3 id="EPEL-镜像"><a href="#EPEL-镜像" class="headerlink" title="EPEL 镜像"></a>EPEL 镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装 EPEL 源</span></span><br><span class="line">wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span><br><span class="line">wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm</span><br><span class="line">rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm</span><br><span class="line"><span class="comment"># 使用阿里云镜像</span></span><br><span class="line"><span class="keyword">if</span> [[ ! <span class="_">-f</span> /etc/yum.repos.d/epel.repo.backup ]]; <span class="keyword">then</span></span><br><span class="line">    mv /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel.repo.backup 2&gt;/dev/null || :</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ ! <span class="_">-f</span> /etc/yum.repos.d/epel-testing.repo.backup ]]; <span class="keyword">then</span></span><br><span class="line">    mv /etc/yum.repos.d/epel-testing.repo /etc/yum.repos.d/epel-testing.repo.backup 2&gt;/dev/null || :</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo</span><br></pre></td></tr></table></figure>
-<h2 id="PyPi-镜像"><a href="#PyPi-镜像" class="headerlink" title="PyPi 镜像"></a>PyPi 镜像</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~/.pip</span><br><span class="line">touch ~/.pip/pip.conf</span><br><span class="line"></span><br><span class="line">sed -i.backup -r \</span><br><span class="line">    <span class="string">'s/^index-url\s*=\s*.+$/index-url = http:\/\/mirrors.aliyun.com\/pypi\/simple\//'</span> \</span><br><span class="line">    ~/.pip/pip.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># If file not changed, write contents back to pip.conf</span></span><br><span class="line">diff <span class="string">"~/.pip/pip.conf"</span> <span class="string">"~/.pip/pip.conf.backup"</span> &amp;&gt; /dev/null</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $? <span class="_">-eq</span> 0 ]; <span class="keyword">then</span></span><br><span class="line">cat &gt; ~/.pip/pip.conf &lt;&lt;EOF</span><br><span class="line">[global]</span><br><span class="line">index-url = http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line">EOF</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
-<h2 id="RubyGems-镜像"><a href="#RubyGems-镜像" class="headerlink" title="RubyGems 镜像"></a>RubyGems 镜像</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gem <span class="built_in">source</span> -r https://rubygems.org/</span><br><span class="line">gem <span class="built_in">source</span> <span class="_">-a</span> http://mirrors.aliyun.com/rubygems/</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/" data-id="ciopvz7fu000oyesmo17yzlhq" class="article-share-link">Share</a>
-      
-        <a href="http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/blog/categories/it/blog/page/2/">2</a><a class="page-number" href="/blog/categories/it/blog/page/3/">3</a><a class="extend next" rel="next" href="/blog/categories/it/blog/page/2/">Next &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/categories/it/blog/page/2/">2</a><a class="page-number" href="/blog/categories/it/blog/page/3/">3</a><a class="page-number" href="/blog/categories/it/blog/page/4/">4</a><a class="extend next" rel="next" href="/blog/categories/it/blog/page/2/">Next &raquo;</a>
   </nav>
 
 </section>
@@ -442,7 +442,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/">AWS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/beyond-compare-3/">Beyond Compare 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fpm/">FPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">GitHub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">Go</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hardware/">Hardware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/">OSX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/omnimarkuppreviewer/">OmniMarkupPreviewer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pika/">Pika</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpm/">RPM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-2/">Sublime Text 2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime-text-3/">Sublime Text 3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/">Unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vagrant/">Vagrant</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/virtualbox/">VirtualBox</a></li></ul>
     </div>
   </div>
 
@@ -451,7 +451,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
+      <a href="/tags/aws/" style="font-size: 10px;">AWS</a> <a href="/tags/beyond-compare-3/" style="font-size: 10px;">Beyond Compare 3</a> <a href="/tags/dns/" style="font-size: 10px;">DNS</a> <a href="/tags/docker/" style="font-size: 10px;">Docker</a> <a href="/tags/fpm/" style="font-size: 10px;">FPM</a> <a href="/tags/git/" style="font-size: 10px;">Git</a> <a href="/tags/github/" style="font-size: 13.33px;">GitHub</a> <a href="/tags/go/" style="font-size: 13.33px;">Go</a> <a href="/tags/golang/" style="font-size: 10px;">Golang</a> <a href="/tags/hardware/" style="font-size: 10px;">Hardware</a> <a href="/tags/hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/osx/" style="font-size: 10px;">OSX</a> <a href="/tags/omnimarkuppreviewer/" style="font-size: 10px;">OmniMarkupPreviewer</a> <a href="/tags/pika/" style="font-size: 10px;">Pika</a> <a href="/tags/python/" style="font-size: 20px;">Python</a> <a href="/tags/rpm/" style="font-size: 10px;">RPM</a> <a href="/tags/rabbitmq/" style="font-size: 16.67px;">RabbitMQ</a> <a href="/tags/sublime-text-2/" style="font-size: 13.33px;">Sublime Text 2</a> <a href="/tags/sublime-text-3/" style="font-size: 10px;">Sublime Text 3</a> <a href="/tags/unicode/" style="font-size: 10px;">Unicode</a> <a href="/tags/vagrant/" style="font-size: 13.33px;">Vagrant</a> <a href="/tags/virtualbox/" style="font-size: 10px;">VirtualBox</a>
     </div>
   </div>
 
@@ -460,7 +460,7 @@ stacktrace，但是什么是“足够大”？</p>
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2012/10/">October 2012</a></li></ul>
     </div>
   </div>
 
@@ -470,6 +470,10 @@ stacktrace，但是什么是“足够大”？</p>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/2017/10/14/suspicious-502-error-from-elb/">解决 AWS ELB 偶发的 502 Bad Gateway 错误</a>
+          </li>
         
           <li>
             <a href="/blog/2016/05/22/evaluating-new-docker-for-mac-beta/">试用最新的 Docker for Mac Beta</a>
@@ -487,10 +491,6 @@ stacktrace，但是什么是“足够大”？</p>
             <a href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/">删除 Intel HD Graphics 显卡工具的全局快捷键</a>
           </li>
         
-          <li>
-            <a href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 &quot;supR3HardenedWinReSpawn&quot;</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -503,7 +503,7 @@ stacktrace，但是什么是“足够大”？</p>
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2016 Timon Wong<br>
+      &copy; 2017 Timon Wong<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
@@ -571,23 +571,6 @@ ga('send', 'pageview');
 
 
 
-  </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"processEscapes":"true,","inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"]}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
