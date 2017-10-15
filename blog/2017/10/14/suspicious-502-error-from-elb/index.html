@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Timon Wong&#39;s Blog">
 <meta property="og:description" content="问题描述在使用了 Prometheus 做了 HTTP 协议的监控之后，blackbox_exporter 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。 HTTP 数据流向如下： 1[Client] --- [ELB] --- [">
 <meta property="og:image" content="http://theo-im.qiniudn.com/images/2017-10-14-tcpdump.png">
-<meta property="og:updated_time" content="2017-10-15T04:15:35.000Z">
+<meta property="og:updated_time" content="2017-10-15T04:41:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解决 AWS ELB 偶发的 502 Bad Gateway 错误">
 <meta name="twitter:description" content="问题描述在使用了 Prometheus 做了 HTTP 协议的监控之后，blackbox_exporter 偶尔会报一些 ProbeDown 的报警，经过检查是 502 Bad Gateway 错误，但此时后端是正常的，只是在 AWS ELB 的监控指标中，看到了 ELB HTTP 5xx 相关错误，因此困扰了一段时间。 HTTP 数据流向如下： 1[Client] --- [ELB] --- [">
@@ -108,7 +108,7 @@
 <p>最开始是怀疑是后端问题，但是查阅了 nginx 和 App servers 的日志，没有任何结果，只是在 ELB 日志里面找到了 502 Bad Gateway 的错误信息。无奈之下甚至怀疑 nginx 所在 EC2 instance 有问题，因此求助了 AWS 技术支持。根据建议，在 nginx 这端做了 tcpdump 抓包，最后终于在 AWS 技术支持的帮助下，定位并解决了问题 🎉。</p>
 <p>先补充一个知识：如果后端支持的话，ELB 会使用保持连接（HTTP persistent/keep-alive connections）。来看看这一个保持连接的 TCP stream：</p>
 <p><img src="http://theo-im.qiniudn.com/images/2017-10-14-tcpdump.png" alt=""></p>
-<p>其中，｀10.100.2.186｀ 是 ELB 内部 IP，｀10.100.250.22｀是 nginx 服务器内部 IP。这样，可以看到：</p>
+<p>其中，<code>10.100.2.186</code> 是 ELB 内部 IP，<code>10.100.250.22</code> 是 nginx 服务器内部 IP。这样，可以看到：</p>
 <ul>
 <li>在 76.69 秒时候，连接被创建；</li>
 <li>在 181.69 秒的时候，是最后一次有效请求；</li>
@@ -128,7 +128,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/" data-id="cj8s8xyb80010tksmqv5ta6g7" class="article-share-link">Share</a>
+      <a data-url="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/" data-id="cj8s9k7j70010fpsmwt9rb0wd" class="article-share-link">Share</a>
       
         <a href="http://theo.im/blog/2017/10/14/suspicious-502-error-from-elb/#disqus_thread" class="article-comment-link">Comments</a>
       
