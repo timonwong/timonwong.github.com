@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Timon Wong&#39;s Blog</title>
+  <title>Timon Wong</title>
   <icon>https://www.gravatar.com/avatar/27eba4a33a317761c17d96f1f009ae49</icon>
   <subtitle>(╯°□°）╯ ┻━┻</subtitle>
   <link href="/atom.xml" rel="self"/>
