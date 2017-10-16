@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="删除 Intel HD Graphics 显卡工具的全局快捷键"/>
+  <meta name="description" content="防止 igfxHK.exe 劫持全局快捷键"/>
 
 
 
@@ -194,19 +194,18 @@
 
     <div class="post-content">
       
-        <a id="more"></a>
-<p>Intel的内置显卡工具总是注册全局的快捷键，而且还是常用的（比如 <code>Sublime Text</code>, <code>PyCharm</code>等工具的默认按键绑定），如下：</p>
+        <p>Intel的内置显卡工具总是注册全局的快捷键，而且还是常用的（比如 <code>Sublime Text</code>, <code>PyCharm</code>等工具的默认按键绑定），如下：</p>
 <ul>
-<li>Ctrl + Shift + Up</li>
-<li>Ctrl + Shift + Down</li>
-<li>Ctrl + Shift + Left</li>
-<li>Ctrl + Shift + Right</li>
+<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Up<kbd></kbd></kbd></li>
+<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Down</kbd></li>
+<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Left</kbd></li>
+<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Right</kbd></li>
 </ul>
 <p>这些快捷键都是由 <code>igfxHK.exe</code> 注册的，虽然可以在任务栏中点击禁用快捷键，但是由于快捷键是全局注册，其它应用程序仍然不能使用这些快捷键。</p>
 <p>虽然使用 <code>taskkill /IM igfxHK.exe</code> 来强行终止其进程，释放全局快捷键也可以，但是每次重启都要重新做一次，无论是否自动化，都感觉太二逼了，经过一番瞎捣，发现可以通过该注册表，把快捷键定义全部删除掉，避免 <code>igfxHK.exe</code>
 占有这些全局快捷键。</p>
 <p>注册表文件如下，保存为一个 <code>.reg</code> 文件最后双击运行并导入到注册表即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Windows Registry Editor Version 5.00</div><div class="line"></div><div class="line">[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]</div><div class="line">&quot;3101&quot;=-</div><div class="line">&quot;3105&quot;=-</div><div class="line">&quot;3121&quot;=-</div><div class="line">&quot;9530&quot;=-</div><div class="line">&quot;3106&quot;=-</div><div class="line">&quot;3107&quot;=-</div><div class="line">&quot;3108&quot;=-</div><div class="line">&quot;3109&quot;=-</div><div class="line">&quot;3110&quot;=-</div><div class="line">&quot;4528&quot;=-</div><div class="line">&quot;10&quot;=-</div><div class="line">&quot;11&quot;=-</div></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Windows Registry Editor Version 5.00</div><div class="line"></div><div class="line"><span class="section">[HKEY_CURRENT_USER\Software\Intel\Display\igfxcui\HotKeys]</span></div><div class="line">"3101"=-</div><div class="line">"3105"=-</div><div class="line">"3121"=-</div><div class="line">"9530"=-</div><div class="line">"3106"=-</div><div class="line">"3107"=-</div><div class="line">"3108"=-</div><div class="line">"3109"=-</div><div class="line">"3110"=-</div><div class="line">"4528"=-</div><div class="line">"10"=-</div><div class="line">"11"=-</div></pre></td></tr></table></figure>
 
       
     </div>
