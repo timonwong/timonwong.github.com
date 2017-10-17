@@ -153,6 +153,76 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/">RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2014-05-15
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/blog/categories/it/">IT</a>
+            
+          </div>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>这个问题存在很久了，现象就是使用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 库的客户端在发送大尺寸消息后，RabbitMQ
+没有收到，Consumer 那里会认为消息已丢失。</p>
+<p><strong>NOTE:</strong> 即使在本文写时的最新版(v0.9.13)依然存在这个问题。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>因为网络状态很好，所以没有考虑网络的错误，直接考虑<a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a>库的问题。</p>
+<p>那么第一步就是把 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
+<code>pika/adapters/base_connection.py</code> 这个文件，来看看里面的内容：</p>
+<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/0.9.13/pika/adapters/base_connection.py#L329" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    total_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            bytes_written = self.socket.send(self.outbound_buffer.popleft())</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error, error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">        total_written += bytes_written</div><div class="line">    <span class="keyword">return</span> total_written</div></pre></td></tr></table></figure>
+<p>看出问题了吗？</p>
+<p>来看看<code>socket.send</code>的文档吧：</p>
+<blockquote><p>Send data to the socket. The socket must be connected to a remote socket. The optional flags argument has the same meaning as for recv() above. Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this concept, consult the Socket Programming HOWTO.</p>
+<footer><strong>Python Docs</strong><cite><a href="https://docs.python.org/2/library/socket.html#socket.socket.send" target="_blank" rel="external">socket.send</a></cite></footer></blockquote>
+<p>问题就是，没有检查 <code>socket.send</code> 的返回值，由于 <code>socket.send</code> 返回实际发送的直接个数，可能会小于期望（在这里是
+<code>self.outbound_buffer.popleft()</code>）。</p>
+<p>由于 <code>socket.send</code> 可能没有将数据发送完成就返回了，造成了消息丢失的情况。</p>
+<p>本来想自己修的，看了一眼 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的 <code>master</code> 分支，已经修正了（一次保证将一个帧(Frame)发送完成）：</p>
+<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/master/pika/adapters/base_connection.py#L354" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    bytes_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        frame = self.outbound_buffer.popleft()</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            self.socket.sendall(frame)</div><div class="line">            bytes_written = len(frame)</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error <span class="keyword">as</span> error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">    <span class="keyword">return</span> bytes_written</div></pre></td></tr></table></figure>
+<p>呵呵……</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ol>
+<li>自行打补丁；</li>
+<li>使用 <code>git</code> 上的 Pika: <code>pip install git+https://github.com/pika/pika.git</code>；</li>
+<li>不用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a>, 换其它的，比如 <a href="http://kombu.readthedocs.org/" target="_blank" rel="external">Kombu</a>。</li>
+</ol>
+<p>我现在不用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 了，用 <a href="http://kombu.readthedocs.org/" target="_blank" rel="external">Kombu</a>。</p>
+<p><strong>PS:</strong> <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的发布也太不积极了，都怎么久了还不发新版本。</p>
+
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/blog/2014/05/14/resolve-302-redirection-on-github-pages/">解决GitHub Pages的302转向问题</a>
         
       </h1>
@@ -400,67 +470,6 @@ File/Socket Descriptors 个数。</p>
 <li>Easy customization</li>
 <li>Actively maintained</li>
 </ul>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/blog/2012/12/29/calculating-gradient-form-two-axis-inclinometer/">双轴倾角传感器计算坡度</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2012-12-29
-        </span>
-        
-          <div class="post-category">
-            
-              <a href="/blog/categories/it/">IT</a>
-            
-          </div>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>令 $x$ 轴, $y$ 轴上的转角分别为 $\alpha, \beta$, 平面坡度为 $\theta$, 则:</p>
-<p>$$
-\begin{align}
-  \theta = \arccos({
-    \frac
-      {1}
-      {\sqrt{
-        \tan^2{\alpha} + \tan^2{\beta} + 1
-      }}
-  })
-\end{align}
-$$</p>
-<p>最近拿了个双轴倾角传感器玩玩，把公式和示例代码记下来备忘。</p>
-<p>推导过程就省略了，下面是C语言描述的示例代码，其中 <code>calc_gradient_from_pitch_roll()</code> 函数的参数和返回值都是<strong>弧度</strong>。</p>
-<figure class="highlight c"><figcaption><span>坡度计算示例代码</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> MATH_PI     (3.14159f)</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> DEGREES_TO_RADIANS(angle)       ((angle) * ((MATH_PI) / 180.0f))</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> RADIANS_TO_DEGREES(radians)     ((radians) * (180.0f / (MATH_PI)))</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">float</span> <span class="title">calc_gradient_from_pitch_roll</span><span class="params">(<span class="keyword">float</span> pitch, <span class="keyword">float</span> roll)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">float</span> tan_pitch = <span class="built_in">tan</span>(pitch);</div><div class="line">    <span class="keyword">float</span> tan_roll  = <span class="built_in">tan</span>(roll);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="built_in">acos</span>(<span class="number">1.0f</span> / <span class="built_in">sqrt</span>(tan_pitch * tan_pitch + tan_roll * tan_roll + <span class="number">1.0f</span>));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Test</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> *argv[])</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="keyword">float</span> deg_pitch, deg_roll;</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"(in degress) pitch,roll = "</span>);</div><div class="line">        <span class="keyword">int</span> ret = <span class="built_in">scanf</span>(<span class="string">"%f,%f"</span>, &amp;deg_pitch, &amp;deg_roll);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (ret == <span class="number">2</span>) &#123;</div><div class="line">            <span class="keyword">float</span> pitch    = DEGREES_TO_RADIANS(deg_pitch);</div><div class="line">            <span class="keyword">float</span> roll     = DEGREES_TO_RADIANS(deg_roll);</div><div class="line">            <span class="keyword">float</span> gradient = calc_gradient_from_pitch_roll(pitch, roll);</div><div class="line"></div><div class="line">            <span class="built_in">printf</span>(<span class="string">"(in degress) gradient = %f\n"</span>, RADIANS_TO_DEGREES(gradient));</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ret == EOF) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Print error message and clear the input buffer</span></div><div class="line">            <span class="built_in">printf</span>(<span class="string">"Illegal input\n"</span>);</div><div class="line">            setbuf(<span class="built_in">stdin</span>, <span class="literal">NULL</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
         
       

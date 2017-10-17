@@ -153,6 +153,57 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/">删除 Intel HD Graphics 显卡工具的全局快捷键</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2014-08-07
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/blog/categories/miscellaneous/">Miscellaneous</a>
+            
+          </div>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>防止 igfxHK.exe 劫持全局快捷键</p>
+          <div class="read-more">
+            <a href="/blog/2014/08/07/Remove-Intel-HD-Graphics-Hotkeys/" class="read-more-link">Read more..</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/">VirtualBox与杀毒软件冲突导致虚拟机无法启动: 错误 "supR3HardenedWinReSpawn"</a>
         
       </h1>
@@ -373,76 +424,6 @@ stacktrace，但是什么是“足够大”？</p>
 <li>自动下载、编译、打包 virtualenv、pip、supervisor 等 Python 库和工具的 RPM 包。</li>
 </ul>
 <p>GitHub 项目地址：<a href="https://github.com/timonwong/python27-rpm" target="_blank" rel="external">python27-rpm</a></p>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/">RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2014-05-15
-        </span>
-        
-          <div class="post-category">
-            
-              <a href="/blog/categories/it/">IT</a>
-            
-          </div>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>这个问题存在很久了，现象就是使用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 库的客户端在发送大尺寸消息后，RabbitMQ
-没有收到，Consumer 那里会认为消息已丢失。</p>
-<p><strong>NOTE:</strong> 即使在本文写时的最新版(v0.9.13)依然存在这个问题。</p>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>因为网络状态很好，所以没有考虑网络的错误，直接考虑<a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a>库的问题。</p>
-<p>那么第一步就是把 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的代码拿来读一遍，主要看它是怎么发送消息的，经过一番探索，找到了
-<code>pika/adapters/base_connection.py</code> 这个文件，来看看里面的内容：</p>
-<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/0.9.13/pika/adapters/base_connection.py#L329" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    total_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            bytes_written = self.socket.send(self.outbound_buffer.popleft())</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error, error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">        total_written += bytes_written</div><div class="line">    <span class="keyword">return</span> total_written</div></pre></td></tr></table></figure>
-<p>看出问题了吗？</p>
-<p>来看看<code>socket.send</code>的文档吧：</p>
-<blockquote><p>Send data to the socket. The socket must be connected to a remote socket. The optional flags argument has the same meaning as for recv() above. Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this concept, consult the Socket Programming HOWTO.</p>
-<footer><strong>Python Docs</strong><cite><a href="https://docs.python.org/2/library/socket.html#socket.socket.send" target="_blank" rel="external">socket.send</a></cite></footer></blockquote>
-<p>问题就是，没有检查 <code>socket.send</code> 的返回值，由于 <code>socket.send</code> 返回实际发送的直接个数，可能会小于期望（在这里是
-<code>self.outbound_buffer.popleft()</code>）。</p>
-<p>由于 <code>socket.send</code> 可能没有将数据发送完成就返回了，造成了消息丢失的情况。</p>
-<p>本来想自己修的，看了一眼 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的 <code>master</code> 分支，已经修正了（一次保证将一个帧(Frame)发送完成）：</p>
-<figure class="highlight python"><figcaption><span>pika/adapters/base_connection.py</span><a href="https://github.com/pika/pika/blob/master/pika/adapters/base_connection.py#L354" target="_blank" rel="external">link</a></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_handle_write</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""Handle any outbound buffer writes that need to take place."""</span></div><div class="line">    bytes_written = <span class="number">0</span></div><div class="line">    <span class="keyword">if</span> self.outbound_buffer:</div><div class="line">        frame = self.outbound_buffer.popleft()</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            self.socket.sendall(frame)</div><div class="line">            bytes_written = len(frame)</div><div class="line">        <span class="keyword">except</span> socket.timeout:</div><div class="line">            <span class="keyword">raise</span></div><div class="line">        <span class="keyword">except</span> socket.error <span class="keyword">as</span> error:</div><div class="line">            <span class="keyword">return</span> self._handle_error(error)</div><div class="line">    <span class="keyword">return</span> bytes_written</div></pre></td></tr></table></figure>
-<p>呵呵……</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ol>
-<li>自行打补丁；</li>
-<li>使用 <code>git</code> 上的 Pika: <code>pip install git+https://github.com/pika/pika.git</code>；</li>
-<li>不用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a>, 换其它的，比如 <a href="http://kombu.readthedocs.org/" target="_blank" rel="external">Kombu</a>。</li>
-</ol>
-<p>我现在不用 <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 了，用 <a href="http://kombu.readthedocs.org/" target="_blank" rel="external">Kombu</a>。</p>
-<p><strong>PS:</strong> <a href="https://pypi.python.org/pypi/pika/" target="_blank" rel="external">Pika</a> 的发布也太不积极了，都怎么久了还不发新版本。</p>
 
         
       

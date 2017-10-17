@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="将钉钉接入 Prometheus AlertManager WebHook">
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Timon Wong">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0">
+
+
+
+<link rel="canonical" href="http://theo.im/blog/2017/10/16/release-prometheus-alertmanager-webhook-for-dingtalk/">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0">
+
+
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css">
+
+
+
+
+  
+
+
+  <script id="google_analytics">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-35644871-2', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+
+
+
+
+
+
+
+    <title> 将钉钉接入 Prometheus AlertManager WebHook - Timon Wong </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Timon Wong</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/blog/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo-text">Timon Wong</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              Home
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/blog/archives/">
+            
+            
+              Archives
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          将钉钉接入 Prometheus AlertManager WebHook
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-10-16
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        <h2 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h2><p><strong>Disclaimer</strong>: Personally I dislike <a href="https://www.dingtalk.com" target="_blank" rel="external">DingTalk</a>(a.k.a DingDing) at all 😜.</p>
+<p>Project Repo: <a href="https://github.com/timonwong/prometheus-webhook-dingtalk" target="_blank" rel="external">https://github.com/timonwong/prometheus-webhook-dingtalk</a></p>
+<a id="more"></a>
+<h2 id="Why"><a href="#Why" class="headerlink" title="Why"></a>Why</h2><p>在敝人的「忽悠」下，敝厂在 2016 年中就全面使用了 <a href="https://prometheus.io" target="_blank" rel="external">Prometheus</a> 作为监控系统，这个系统现在已经比较火了，这里就不再多加口舌阐述。后来，敝厂使用了钉钉作为公司内部的指定通（dă）讯（kă）软件，取代了 <a href="https://slack.com" target="_blank" rel="external">Slack</a>。不得不说，比起 <a href="https://slack.com" target="_blank" rel="external">Slack</a> 来，显示报警通知，钉钉不美观。</p>
+<p>按照我个人的看法，一个合格的报警通知，应该包含如下内容：</p>
+<ul>
+<li>报警级别</li>
+<li>简短的报警名称</li>
+<li>简要说明</li>
+<li>详细说明</li>
+<li>附加上下文信息</li>
+<li>一个链接，点击后进入指标的 Graph</li>
+</ul>
+<p>幸运的是，<a href="https://github.com/prometheus/alertmanager" target="_blank" rel="external">Prometheus</a> 已经包含了一个做得比较好的 <a href="https://slack.com" target="_blank" rel="external">Slack</a> 报警模板，只需要从<a href="https://github.com/prometheus/docs/blob/db2a09a8a7e193d6e474f37055908a6d432b88b5/content/docs/alerting/configuration.md#webhook_config" target="_blank" rel="external">这里</a>开始就可以了。</p>
+<h2 id="Routes"><a href="#Routes" class="headerlink" title="Routes"></a>Routes</h2><p><code>prometheus-webhook-dingtalk</code> 默认监听在<code>8060</code>端口（可配置）上，提供了以下路由供 <a href="https://github.com/prometheus/alertmanager" target="_blank" rel="external">AlertManager</a> 的 <a href="https://prometheus.io/docs/alerting/configuration/#&lt;webhook_config" target="_blank" rel="external">webhook_configs</a> 使用：</p>
+<ul>
+<li><code>/dingtalk/&lt;profile&gt;/send</code></li>
+</ul>
+<p>注意这里的 <code>&lt;profile&gt;</code> 需要在 <code>-ding.profile</code> 中指定相应的名称（<code>&lt;profile&gt;</code>）以及钉钉的自定义机器人 WebHook URL（<code>&lt;dingtalk-webhook-url&gt;</code>）。</p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>首先，我个人不喜欢随处都是配置文件的现象，因此 <code>prometheus-webhook-dingtalk</code> 的所有配置通过命令行参数完成:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">usage: prometheus-webhook-dingtalk --ding.profile=DING.PROFILE [&lt;flags&gt;]</div><div class="line"></div><div class="line">Flags:</div><div class="line">  -h, --help             Show context-sensitive help (also try --help-long and --help-man).</div><div class="line">      --web.listen-address=&quot;:8060&quot;  </div><div class="line">                         The address to listen on for web interface.</div><div class="line">      --ding.profile=DING.PROFILE ...  </div><div class="line">                         Custom DingTalk profile (can specify multiple times, &lt;profile&gt;=&lt;dingtalk-url&gt;).</div><div class="line">      --ding.timeout=5s  Timeout for invoking DingTalk webhook.</div><div class="line">      --log.level=info   Only log messages with the given severity or above. One of: [debug, info, warn, error]</div><div class="line">      --version          Show application version.</div></pre></td></tr></table></figure>
+<p>关于这里的 <code>-ding.profile</code> 参数：为了支持同时往多个钉钉自定义机器人发送报警消息，因此 <code>-ding.profile</code> 可以在命令行中指定多次，比如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">prometheus-webhook-dingtalk \</div><div class="line">    --ding.profile=<span class="string">"webhook1=https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxx"</span> \</div><div class="line">    --ding.profile=<span class="string">"webhook2=https://oapi.dingtalk.com/robot/send?access_token=yyyyyyyyyyy"</span></div></pre></td></tr></table></figure>
+<p>这里就定义了两个 WebHook，一个 <code>webhook1</code>，一个 <code>webhook2</code>，用来往不同的钉钉组发送报警消息。</p>
+<p>然后在 <a href="https://github.com/prometheus/alertmanager" target="_blank" rel="external">AlertManager</a> 的配置里面，加入相应的 <code>receiver</code>（注意下面的 <code>url</code>）即可：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="attr">receivers:</span></div><div class="line"><span class="attr">- name:</span> send_to_dingding_webhook1</div><div class="line"><span class="attr">  webhook_configs:</span></div><div class="line"><span class="attr">  - send_resolved:</span> <span class="literal">false</span></div><div class="line"><span class="attr">    url:</span> http://localhost:<span class="number">8060</span>/dingtalk/webhook1/send</div><div class="line"><span class="attr">- name:</span> send_to_dingding_webhook2</div><div class="line"><span class="attr">  webhook_configs:</span></div><div class="line"><span class="attr">  - send_resolved:</span> <span class="literal">false</span></div><div class="line"><span class="attr">    url:</span> http://localhost:<span class="number">8060</span>/dingtalk/webhook2/send</div></pre></td></tr></table></figure>
+<h3 id="In-Action"><a href="#In-Action" class="headerlink" title="In Action"></a>In Action</h3><p>参见官方文章：<a href="https://open-doc.dingtalk.com/docs/doc.htm?treeId=257&amp;articleId=105735&amp;docType=1" target="_blank" rel="external">https://open-doc.dingtalk.com/docs/doc.htm?treeId=257&amp;articleId=105735&amp;docType=1</a>，然后将 webhook 地址拷贝下来，传给 <code>prometheus-webhook-dingtalk</code>。</p>
+<p>最后，来个截图看看效果吧：</p>
+<p><img src="http://theo-im.qiniudn.com/images/2016-10-16-dingtalk-in-action.png" alt=""></p>
+
+      
+    </div>
+
+    
+      
+      
+
+
+
+      
+      
+
+    
+
+    
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/blog/2017/10/14/suspicious-502-error-from-elb/">
+        <span class="next-text nav-default">解决 AWS ELB 偶发的 502 Bad Gateway 错误</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:timon86.wang@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://twitter.com/timonwong" class="iconfont icon-twitter" title="twitter"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/timonwong" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2012 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Timon Wong</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://theo.im/blog/2017/10/16/release-prometheus-alertmanager-webhook-for-dingtalk/';
+        this.page.identifier = 'blog/2017/10/16/release-prometheus-alertmanager-webhook-for-dingtalk/';
+        this.page.title = '将钉钉接入 Prometheus AlertManager WebHook';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//theoim.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="https://cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+  
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      processEscapes: true,
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      skipTags: [ 'script', 'noscript', 'style', 'textarea', 'pre', 'code' ]
+    }
+  });
+</script>
+<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-Ra6zh6uYMmH5ydwCqqMoykyf1T/+ZcnOQfFPhDrp2kI4OIxadnhsvvA2vv9A7xYv" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
