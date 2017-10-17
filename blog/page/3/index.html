@@ -153,6 +153,74 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/blog/2014/05/16/use-fpm-to-create-python-rpm-packages/">使用 FPM 创建 Python 的 RPM 包</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2014-05-16
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/blog/categories/it/">IT</a>
+            
+          </div>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+
+        
+          <p>生成 RPM 包太麻烦了，最近知道了一个名为 <a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 的神器，在此记录一下。</p>
+<h2 id="安装-FPM"><a href="#安装-FPM" class="headerlink" title="安装 FPM"></a>安装 FPM</h2><p><strong>NOTE:</strong> 测试系统为 RedHat 系的 CentOS 6.3，编译 Python 2.7.6 的 RPM 包。</p>
+<h3 id="安装-Ruby"><a href="#安装-Ruby" class="headerlink" title="安装 Ruby"></a>安装 Ruby</h3><p>由于 <a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 使用 <code>Ruby</code> 写成，因此系统中需要安装 <code>Ruby</code> 的运行环境（这里 <code>gem</code> 的源改为了 taobao 的镜像）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Install ruby dependencies</span></div><div class="line">yum -y install ruby rubygems ruby-devel</div><div class="line"><span class="comment"># Use taobao repo for ruby gems</span></div><div class="line">gem sources <span class="_">-a</span> http://ruby.taobao.org/</div><div class="line"><span class="comment"># Remove origin repo from ruby gems</span></div><div class="line">gem sources --remove http://rubygems.org/</div></pre></td></tr></table></figure>
+<h3 id="通过-Gem-安装-FPM"><a href="#通过-Gem-安装-FPM" class="headerlink" title="通过 Gem 安装 FPM"></a>通过 Gem 安装 FPM</h3><p>在 <code>Ruby</code> 安装完成后，就可以使用 <code>gem</code> 安装 <a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Install fpm</span></div><div class="line">gem install fpm</div></pre></td></tr></table></figure>
+<p>Good.</p>
+<h2 id="设置编译环境"><a href="#设置编译环境" class="headerlink" title="设置编译环境"></a>设置编译环境</h2><p>在编译 Python 之前，需要安装开发工具和库:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Install EPEL repository</span></div><div class="line">wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</div><div class="line">wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm</div><div class="line">rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm</div><div class="line"></div><div class="line"><span class="comment"># Install build toolchain</span></div><div class="line">yum -y groupinstall <span class="string">"Development tools"</span></div><div class="line">yum -y install openssl-devel readline-devel bzip2-devel sqlite-devel zlib-devel ncurses-devel db4-devel expat-devel</div></pre></td></tr></table></figure>
+<h2 id="编译并创建-Python-的-RPM-包"><a href="#编译并创建-Python-的-RPM-包" class="headerlink" title="编译并创建 Python 的 RPM 包"></a>编译并创建 Python 的 RPM 包</h2><p><a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 的使用比较简单，可以参考 <a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 的 <a href="https://github.com/jordansissel/fpm/wiki" target="_blank" rel="external">使用说明</a>。</p>
+<p>首先，下载 Python-2.7.6 的源码包并解压：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl --progress-bar -LO http://mirrors.sohu.com/python/2.7.6/Python-2.7.6.tgz</div><div class="line">tar xf Python-2.7.6.tgz</div></pre></td></tr></table></figure>
+<p>第二步，编译 Python-2.7.6</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> Python-2.7.6.tgz</div><div class="line"></div><div class="line"><span class="comment"># Python2.7编译安装后会安装到这个目录，方便打包</span></div><div class="line"><span class="built_in">export</span> INTERMEDIATE_INSTALL_DIR=/tmp/installdir-Python-2.7.6</div><div class="line"><span class="comment"># RPM包安装后Python2.7的目录</span></div><div class="line"><span class="built_in">export</span> INSTALL_DIR=/usr/<span class="built_in">local</span></div><div class="line"></div><div class="line">LDFLAGS=<span class="string">"-Wl,-rpath=<span class="variable">$&#123;INSTALL_DIR&#125;</span>/lib <span class="variable">$&#123;LDFLAGS&#125;</span>"</span> \</div><div class="line">            ./configure --prefix=<span class="variable">$&#123;INSTALL_DIR&#125;</span> --enable-unicode=ucs4 \</div><div class="line">                --enable-shared --enable-ipv6</div><div class="line">make</div><div class="line">make install DESTDIR=<span class="variable">$&#123;INTERMEDIATE_INSTALL_DIR&#125;</span></div></pre></td></tr></table></figure>
+<p>第三步，使用 <a href="https://github.com/jordansissel/fpm" target="_blank" rel="external">FPM</a> 创建 RPM 包：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 注意之前导出 INTERMEDIATE_INSTALL_DIR 和 INSTALL_DIR 这两个环境变量，这里还要使用</span></div><div class="line">fpm <span class="_">-s</span> dir -t <span class="_">-f</span> rpm -n python27 -v <span class="string">'2.7.6'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'openssl'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'bzip2'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'zlib'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'expat'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'db4'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'sqlite'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'ncurses'</span> \</div><div class="line">    <span class="_">-d</span> <span class="string">'readline'</span> \</div><div class="line">    --directories=<span class="variable">$&#123;INSTALL_DIR&#125;</span>/lib/python2.7/ \</div><div class="line">    --directories=<span class="variable">$&#123;INSTALL_DIR&#125;</span>/include/python2.7/ \</div><div class="line">    -C <span class="variable">$&#123;INTERMEDIATE_INSTALL_DIR&#125;</span> .</div></pre></td></tr></table></figure>
+<h2 id="Bonus-Time"><a href="#Bonus-Time" class="headerlink" title="Bonus Time"></a>Bonus Time</h2><p>包含以下内容：</p>
+<ul>
+<li>自动下载、编译、打包 Python RPM 包的 Makefile；</li>
+<li>自动下载、编译、打包 virtualenv、pip、supervisor 等 Python 库和工具的 RPM 包。</li>
+</ul>
+<p>GitHub 项目地址：<a href="https://github.com/timonwong/python27-rpm" target="_blank" rel="external">python27-rpm</a></p>
+
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/blog/2014/05/15/rabbitmq-note-3-pika-send-large-message/">RabbitMQ笔记（三）: Pika客户端（Python）发送大尺寸消息的问题</a>
         
       </h1>
@@ -413,63 +481,6 @@ File/Socket Descriptors 个数。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vagrant ssh</div></pre></td></tr></table></figure>
 <p>或使用SSH工具，例如 <a href="http://www.netsarang.com/products/xsh_overview.html" target="_blank" rel="external">XShell</a>, <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html" target="_blank" rel="external">PuTTY</a> 等工具，连接到 <code>10.10.0.70:22</code> (IP在之前 <code>Vagrantfile</code> 中定义)</p>
 <h2 id="停止虚拟机"><a href="#停止虚拟机" class="headerlink" title="停止虚拟机"></a>停止虚拟机</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vagrant halt</div></pre></td></tr></table></figure>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/blog/2014/05/13/from-octopress-to-hexo/">From Octopress To Hexo</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2014-05-13
-        </span>
-        
-          <div class="post-category">
-            
-              <a href="/blog/categories/it/">IT</a>
-            
-          </div>
-        
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>It’s been a long time, <a href="http://octopress.org/" target="_blank" rel="external">Octopress</a> is slow and painful to setup, after the death of my silly hard drive, I’m too lazy so I give up setting a Octopress environment, even writing new posts.</p>
-<p>Eventually, I’m levaing, heading for <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>.</p>
-<h2 id="What’s-Hexo"><a href="#What’s-Hexo" class="headerlink" title="What’s Hexo?"></a>What’s Hexo?</h2><p>Hexo is a fast, simple and powerful blog framework. It parses your posts with <a href="http://daringfireball.net/projects/markdown/" target="_blank" rel="external">Markdown</a> or other render engine and generates static files with the beautiful theme. All of these just take seconds.</p>
-<h2 id="Why"><a href="#Why" class="headerlink" title="Why?"></a>Why?</h2><ul>
-<li>Painless installing</li>
-<li>Cleaner <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a></li>
-<li>Simple configuration</li>
-<li>Fast generating, deploying</li>
-<li>Easy customization</li>
-<li>Actively maintained</li>
-</ul>
 
         
       
