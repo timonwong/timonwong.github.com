@@ -201,8 +201,8 @@
 <p>对于部分不支持的操作，可以使用留桩代码返回 <code>NotImplemented</code> 错误，官方提供了一个 <a href="https://github.com/minio/minio/blob/3d2d63f71e04404be70fda9653394915f4e7458a/cmd/gateway-unsupported.go" target="_blank" rel="external"><code>gatewayUnsupported</code></a> 可供参考。</p>
 <h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>将上面的内容搞清楚后，剩下的工作就只是将相应的代码套进上面的接口了，没有太多技术含量。</p>
 <p>阿里云 OSS API 风格有很重的 AWS S3 痕迹，所以这个「翻译」工作很没有挑战性😜。</p>
-<p>~ 所以先站位吧，以后再更（这次不会放鸽子了），代码也会一并放出来（光速逃 ~</p>
 <p><strong>EDIT(2017-10-23)</strong> Pull Request 请看 <a href="https://github.com/minio/minio/pull/5103" target="_blank" rel="external">minio/minio#5103</a></p>
+<p>想吐槽的是 minio 里面结构比较乱，加一个 Gateway 要改很多文件，准备再提交一个 PR 改进一下。</p>
 
       
     </div>
