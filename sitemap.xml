@@ -4,7 +4,7 @@
   <url>
     <loc>http://theo.im/blog/2017/10/17/use-minio-with-aliyun-oss/</loc>
     
-    <lastmod>2017-10-24T07:08:28.000Z</lastmod>
+    <lastmod>2017-12-19T08:34:56.000Z</lastmod>
     
   </url>
   
@@ -86,21 +86,28 @@
   </url>
   
   <url>
-    <loc>http://theo.im/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/</loc>
-    
-    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/</loc>
-    
-    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://theo.im/blog/2014/07/21/Printing-stacktrace-in-Go/</loc>
+    
+    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/</loc>
+    
+    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/</loc>
+    
+    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://theo.im/blog/2014/05/13/rabbitmq-note-2-about-simultaneous-connections/</loc>
     
     <lastmod>2016-05-21T15:40:47.000Z</lastmod>
     
@@ -128,14 +135,7 @@
   </url>
   
   <url>
-    <loc>http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/</loc>
-    
-    <lastmod>2016-05-21T15:40:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://theo.im/blog/2014/05/20/use-aliyun-mirror-to-boost-up-download-speed/</loc>
+    <loc>http://theo.im/blog/2012/10/27/directory-comparison-for-git-difftool/</loc>
     
     <lastmod>2016-05-21T15:40:47.000Z</lastmod>
     
