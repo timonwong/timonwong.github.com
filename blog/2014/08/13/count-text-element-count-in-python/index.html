@@ -240,7 +240,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
 </blockquote>
 <p>Sure? 举一个反例就可以了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line"><span class="keyword">assert</span> sys.maxunicode == <span class="number">0x10ffff</span>  <span class="comment"># 保证是通过 UCS-4 编译的</span></div><div class="line"></div><div class="line"><span class="comment"># 这样，常见字，没有问题，GOOD</span></div><div class="line"><span class="keyword">assert</span> len(<span class="string">u'中文'</span>) == <span class="number">2</span></div><div class="line"></div><div class="line"><span class="comment"># 这样，生僻字，Non BMP，也没有问题, GOOD</span></div><div class="line"><span class="keyword">assert</span> len(<span class="string">u'𤴐𪚥'</span>) == <span class="number">2</span></div><div class="line"></div><div class="line"><span class="comment"># 欢迎来到 Unicode 的世界, 不要忘了 Unicode 有叫 Mark 的这种东西</span></div><div class="line"><span class="keyword">assert</span> len(<span class="string">u'ë́'</span>) == <span class="number">2</span></div></pre></td></tr></table></figure>
-<p><img src="http://theo-im.qiniudn.com/images/yaoming-face.jpg" alt=""></p>
+<p><img src="https://theo-im-1255089908.cos.ap-chengdu.myqcloud.com/images/yaoming-face.jpg" alt=""></p>
 <p>所以最怕半罐水了（当然也包括我自己，太可怕了）。</p>
 <h3 id="Show-Me-The-Source-Code"><a href="#Show-Me-The-Source-Code" class="headerlink" title="Show Me The Source Code"></a>Show Me The Source Code</h3><p>在 .Net Framwork 里，有一个叫 String.Globalization.StringInfo 的类可以处理上面的情况。
 由于我本人比较懒，就直接参考 Mono 的代码写了，Mono 的代码可以<a href="https://github.com/mono/mono/blob/master/mcs/class/corlib/System.Globalization/StringInfo.cs" target="_blank" rel="external">点击这里查看</a>。</p>
@@ -384,7 +384,7 @@ BIG5 就不说了，“许功盖” 问题大家都知道，简直鬼火冒。�
      
       2012 - 
     
-    2017
+    2018
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
