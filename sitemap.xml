@@ -16,13 +16,6 @@
   </url>
   
   <url>
-    <loc>http://theo.im/blog/2014/08/08/Golang-memory-part-1/</loc>
-    
-    <lastmod>2018-09-30T09:33:10.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://theo.im/blog/2014/08/13/count-text-element-count-in-python/</loc>
     
     <lastmod>2018-09-30T09:33:10.000Z</lastmod>
@@ -30,7 +23,7 @@
   </url>
   
   <url>
-    <loc>http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/</loc>
+    <loc>http://theo.im/blog/2014/08/08/Golang-memory-part-1/</loc>
     
     <lastmod>2018-09-30T09:33:10.000Z</lastmod>
     
@@ -38,6 +31,13 @@
   
   <url>
     <loc>http://theo.im/blog/2014/05/14/resolve-302-redirection-on-github-pages/</loc>
+    
+    <lastmod>2018-09-30T09:33:10.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://theo.im/blog/2014/08/05/VirtualBox-error-launching-vm-instance-in-supR3HardenedWinReSpawn/</loc>
     
     <lastmod>2018-09-30T09:33:10.000Z</lastmod>
     
